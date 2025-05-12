@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Liste des Produits</h2>
+        <a href="{% url 'ajouter_produit_etape1' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un produit
+        </a>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filtres-section mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="categorie">Catégorie</label>
+                    <select class="form-control" id="categorie">
+                        <option value="">Toutes les catégories</option>
+                        <option value="Smartphones">Smartphones</option>
+                        <option value="Ordinateurs">Ordinateurs</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Wearables">Wearables</option>
+                        <option value="Tablettes">Tablettes</option>
+                        <option value="Photo">Photo</option>
+                        <option value="Périphériques">Périphériques</option>
+                        <option value="Moniteurs">Moniteurs</option>
+                        <option value="Stockage">Stockage</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="marque">Marque</label>
+                    <select class="form-control" id="marque">
+                        <option value="">Toutes les marques</option>
+                        <option value="Apple">Apple</option>
+                        <option value="Samsung">Samsung</option>
+                        <option value="Sony">Sony</option>
+                        <option value="Bose">Bose</option>
+                        <option value="Canon">Canon</option>
+                        <option value="Logitech">Logitech</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="prix">Prix maximum</label>
+                    <input type="range" class="form-range" id="prix" min="0" max="3000" step="100">
+                    <div class="d-flex justify-content-between">
+                        <span>0€</span>
+                        <span id="prix-value">1500€</span>
+                        <span>3000€</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grille de produits -->
+    <div class="row">
+        {% for produit in produits %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if produit.image_url %}
+                <img src="{{ produit.image_url }}" class="card-img-top" alt="{{ produit.nom }}"
+                    style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                    style="height: 200px;">
+                    <i class="fas fa-image fa-3x text-muted"></i>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="produit-info">
+                        <span class="produit-categorie">{{ produit.categorie }}</span>
+                        <h5 class="produit-nom">{{ produit.nom }}</h5>
+                        <p class="produit-description">{{ produit.description|truncatechars:100 }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="produit-prix">{{ produit.prix }} FCFA</span>
+                            <span
+                                class="produit-stock {% if produit.stock > 10 %}stock-eleve{% elif produit.stock > 0 %}stock-moyen{% else %}stock-bas{% endif %}">
+                                Stock: {{ produit.stock }}
+                            </span>
+                        </div>
+
+                        <div class="caracteristiques mb-3">
+                            {% if produit.marque %}
+                            <small class="text-muted">Marque: {{ produit.marque }}</small><br>
+                            {% endif %}
+                            {% if produit.caracteristiques.couleur %}
+                            <small class="text-muted">Couleur: {{ produit.caracteristiques.couleur }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'modifier_produit' produit.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <a href="{% url 'supprimer_produit' produit.id %}" class="btn btn-outline-danger btn-sm"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Aucun produit n'a été ajouté pour le moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if produits.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if produits.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ produits.previous_page_number }}">Précédent</a>
+            </li>
+            {% endif %}
+
+            {% for num in produits.paginator.page_range %}
+            <li class="page-item {% if produits.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if produits.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ produits.next_page_number }}">Suivant</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+    .produit-categorie {
+        font-size: 0.8rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .produit-nom {
+        font-size: 1.25rem;
+        margin: 0.5rem 0;
+        color: #2c3e50;
+    }
+
+    .produit-description {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    .produit-prix {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .produit-stock {
+        font-size: 0.9rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+    }
+
+    .stock-eleve {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .stock-moyen {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .stock-bas {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Mise à jour de l'affichage du prix
+        const prixSlider = document.getElementById('prix');
+        const prixValue = document.getElementById('prix-value');
+
+        prixSlider.addEventListener('input', function () {
+            prixValue.textContent = this.value + '€';
+        });
+
+        // Filtrage des produits
+        const categorieSelect = document.getElementById('categorie');
+        const marqueSelect = document.getElementById('marque');
+
+        function filterProducts() {
+            const categorie = categorieSelect.value;
+            const marque = marqueSelect.value;
+            const prixMax = prixSlider.value;
+
+            // Ici, vous pouvez ajouter la logique de filtrage AJAX
+            console.log('Filtres:', { categorie, marque, prixMax });
+        }
+
+        categorieSelect.addEventListener('change', filterProducts);
+        marqueSelect.addEventListener('change', filterProducts);
+        prixSlider.addEventListener('change', filterProducts);
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Nos Catégories{% endblock %}
+
+{% block content %}
+<style>
+    .categories-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .categories-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .categories-header h1 {
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .categories-header p {
+        font-size: 1.1em;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 20px 0;
+    }
+
+    .category-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .category-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .category-content {
+        padding: 20px;
+    }
+
+    .category-title {
+        font-size: 1.4em;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .category-description {
+        color: #666;
+        font-size: 0.95em;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .empty-state h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .categories-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .categories-header h1 {
+            font-size: 2em;
+        }
+    }
+</style>
+
+<div class="categories-container">
+    <div class="categories-header">
+        <h1>Nos Catégories</h1>
+        <p>Découvrez notre sélection de produits par catégorie</p>
+    </div>
+
+    <div class="categories-grid">
+        {% for category in categories %}
+        <div class="category-card">
+            {% if category.image_url %}
+            <img src="{{ category.image_url }}" alt="{{ category.nom }}" class="category-image">
+            {% else %}
+            <img src="https://via.placeholder.com/400x300?text={{ category.nom }}" alt="{{ category.nom }}"
+                class="category-image">
+            {% endif %}
+            <div class="category-content">
+                <h2 class="category-title">{{ category.nom }}</h2>
+                <p class="category-description">{{ category.description|truncatewords:20 }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <h3>Aucune catégorie trouvée</h3>
+            <p>Les catégories seront bientôt disponibles.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%block extra_css%}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="produits-grid">
+        {% for produit in produits %}
+        <div class="card produit-card fade-in">
+            {% if produit.image_url %}
+            <img src="{{ produit.image_url }}" class="produit-image" alt="{{ produit.nom }}">
+            {% else %}
+            <div class="produit-image bg-light d-flex align-items-center justify-content-center">
+                <i class="fas fa-image fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+
+            <div class="produit-info">
+
+                <span class="produit-categorie">{{ produit.categorie }}</span>
+                <h5 class="produit-nom">{{ produit.nom }}</h5>
+                <p class="produit-description">{{ produit.description|truncatechars:100 }}</p>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="produit-prix">{{ produit.prix }} FCFA</span>
+                    <span
+                        class="produit-stock {% if produit.stock > 10 %}stock-eleve{% elif produit.stock > 0 %}stock-moyen{% else %}stock-bas{% endif %}">
+                        Stock: {{ produit.stock }}
+                    </span>
+                </div>
+
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Aucun produit n'est disponible pour le moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

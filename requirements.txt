@@ -1,7 +1,9 @@
 asgiref==3.8.1
 Django==5.1.9
-django-mongodb-backend==5.1.0b2
+mongoengine==0.24.0
 dnspython==2.7.0
-pymongo==4.12.1
+pymongo==3.12.3
 sqlparse==0.5.3
 tzdata==2025.2
+python-slugify==8.0.1
+text-unidecode==1.3
