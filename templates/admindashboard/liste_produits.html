@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/liste_produits.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -58,6 +62,7 @@
     </div>
 
     <!-- Grille de produits -->
+
     <div class="row">
         {% for produit in produits %}
         <div class="col-md-4 mb-4">
@@ -143,90 +148,9 @@
     {% endif %}
 </div>
 
-<style>
-    .produit-categorie {
-        font-size: 0.8rem;
-        color: #6c757d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
 
-    .produit-nom {
-        font-size: 1.25rem;
-        margin: 0.5rem 0;
-        color: #2c3e50;
-    }
-
-    .produit-description {
-        font-size: 0.9rem;
-        color: #6c757d;
-        margin-bottom: 1rem;
-    }
-
-    .produit-prix {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #2c3e50;
-    }
-
-    .produit-stock {
-        font-size: 0.9rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-    }
-
-    .stock-eleve {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .stock-moyen {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .stock-bas {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-
-    .card {
-        transition: transform 0.2s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-    }
-</style>
 
 {% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Mise à jour de l'affichage du prix
-        const prixSlider = document.getElementById('prix');
-        const prixValue = document.getElementById('prix-value');
-
-        prixSlider.addEventListener('input', function () {
-            prixValue.textContent = this.value + '€';
-        });
-
-        // Filtrage des produits
-        const categorieSelect = document.getElementById('categorie');
-        const marqueSelect = document.getElementById('marque');
-
-        function filterProducts() {
-            const categorie = categorieSelect.value;
-            const marque = marqueSelect.value;
-            const prixMax = prixSlider.value;
-
-            // Ici, vous pouvez ajouter la logique de filtrage AJAX
-            console.log('Filtres:', { categorie, marque, prixMax });
-        }
-
-        categorieSelect.addEventListener('change', filterProducts);
-        marqueSelect.addEventListener('change', filterProducts);
-        prixSlider.addEventListener('change', filterProducts);
-    });
-</script>
+<script src="{% static 'js/liste_produits.js' %}"></script>
 {% endblock %}
 {% endblock %}

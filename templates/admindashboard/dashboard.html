@@ -11,7 +11,7 @@
 <div class="dashboard-wrapper">
     <!-- Header -->
     <header class="dashboard-header">
-        <h1 class="dashboard-title">Dashboard</h1>
+        <h1 class="dashboard-title">Dashboard Administrateur</h1>
         <div class="dashboard-header-right">
             <input type="text" class="dashboard-search" placeholder="Recherche...">
             <div class="dashboard-user">
@@ -65,103 +65,72 @@
         </div>
         <!-- Colonne droite : Tableaux -->
         <div class="dashboard-tables">
-            <!-- Produits -->
-            <div class="card">
+
+            <div class="card mt-6">
                 <div class="table-header">
-                    <h3 class="title-md">Produits</h3>
+                    <h3 class="title-md"> Produits</h3>
                     <div class="action-buttons">
                         <a href="{% url 'ajouter_produit_etape1' %}" class="btn btn-success">
                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            Ajouter
+                            Ajouter un nouveau produit
                         </a>
                     </div>
                 </div>
-                <div class="table-container">
-                    <table class="table">
+                <div class="categories-table-container">
+                    <table class="categories-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
                                 <th>Catégorie</th>
-                                <th>Prix</th>
-                                <th>Stock</th>
+                                <th>Description</th>
+                                <th>Produits</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for product in products %}
+                            {% for category in categories %}
                             <tr>
-                                <td>{{ product.id }}</td>
-                                <td>{{ product.name }}</td>
-                                <td>{{ product.category.name }}</td>
-                                <td>{{ product.price|floatformat:2 }} FCFA</td>
-                                <td>{{ product.stock }}</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="" class="btn btn-warning">
+                                <td class="category-cell">
+                                    <div class="category-info">
+                                        {% if category.image_url %}
+                                        <img src="{{ category.image_url }}" alt="{{ category.nom }}"
+                                            class="category-thumbnail">
+                                        {% endif %}
+                                        <span class="category-name">{{ category.nom }}</span>
+                                    </div>
+                                </td>
+                                <td class="description-cell">{{ category.description|truncatechars:100 }}</td>
+                                <td class="count-cell">
+                                    <span class="category-count">{{ category.products.count }}</span>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="category-actions">
+                                        <a href="" class="btn btn-warning btn-sm" title="Modifier">
                                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
-                                            Modifier
                                         </a>
-                                        <a href="" class="btn btn-danger">
+                                        <a href="" class="btn btn-danger btn-sm" title="Supprimer">
                                             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
-                                            Supprimer
                                         </a>
                                     </div>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-gray-500">Aucun produit disponible</td>
+                                <td colspan="4" class="no-categories">
+                                    <p>Aucune catégorie disponible</p>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <!-- Catégories -->
-            <div class="card mt-6">
-                <div class="table-header">
-                    <h3 class="title-md">Catégories</h3>
-                </div>
-                <div class="categories-grid">
-                    {% for category in categories %}
-                    <div class="category-card">
-                        <div class="category-card-header">
-                            <h4 class="category-name">{{ category.name }}</h4>
-                            <span class="category-count">{{ category.products.count }} produits</span>
-                        </div>
-                        <p class="category-description">{{ category.description }}</p>
-                        <div class="category-actions">
-                            <a href="" class="btn btn-warning">
-                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                                Modifier
-                            </a>
-                            <a href="" class="btn btn-danger">
-                                <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Supprimer
-                            </a>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="no-categories">
-                        <p class="text-center py-4 text-gray-500">Aucune catégorie disponible</p>
-                    </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -213,5 +182,118 @@
     });
 </script>
 {% endblock %}
+
+<style>
+    .categories-table-container {
+        overflow-x: auto;
+        padding: 0 20px 20px;
+    }
+
+    .categories-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .categories-table th {
+        text-align: left;
+        padding: 12px;
+        background: #f8fafc;
+        color: #4a5568;
+        font-weight: 600;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .categories-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    .category-cell {
+        min-width: 200px;
+    }
+
+    .category-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .category-thumbnail {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .category-name {
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .description-cell {
+        max-width: 300px;
+        color: #4a5568;
+        font-size: 0.9em;
+    }
+
+    .count-cell {
+        text-align: center;
+    }
+
+    .category-count {
+        display: inline-block;
+        background: #edf2f7;
+        color: #4a5568;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 500;
+    }
+
+    .actions-cell {
+        width: 100px;
+        text-align: right;
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+
+    .btn-sm {
+        padding: 6px;
+        line-height: 1;
+    }
+
+    .btn-sm .btn-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .no-categories {
+        text-align: center;
+        padding: 40px;
+        color: #718096;
+    }
+
+    @media (max-width: 768px) {
+
+        .categories-table th:nth-child(2),
+        .categories-table td:nth-child(2) {
+            display: none;
+        }
+
+        .category-cell {
+            min-width: 150px;
+        }
+
+        .description-cell {
+            max-width: 200px;
+        }
+    }
+</style>
 
 {% endblock %}

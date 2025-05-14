@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 def dashboard(request):
-    categories = CATEGORIES
-    return render(request, 'dashboard.html', {'categories': categories})
+    categories = Categorie.objects.all()
+    return render(request, 'admindashboard/dashboard.html', {'categories': categories})
 
 
 
@@ -59,7 +59,7 @@ def ajouter_categorie(request):
     else:
         form = CategorieForm()
     
-    return render(request, 'ajouter_categorie.html', {'form': form})
+    return render(request, 'admindashboard/ajouter_categorie.html', {'form': form})
 
 def modifier_categorie(request, slug):
     categorie = get_object_or_404(Categorie, slug=slug)
@@ -138,7 +138,7 @@ def ajouter_produit_etape1(request):
     else:
         form = ProduitFormEtape1()
     
-    return render(request, 'ajouter_produit_etape1.html', {
+    return render(request, 'admindashboard/ajouter_produit_etape1.html', {
         'form': form,
         'categories': CATEGORIES
     })
@@ -197,7 +197,7 @@ def ajouter_produit_etape2(request):
     else:
         form = ProduitFormEtape2(categorie=produit_data['categorie'])
     
-    return render(request, 'ajouter_produit_etape2.html', {
+    return render(request, 'admindashboard/ajouter_produit_etape2.html', {
         'form': form,
         'produit_data': produit_data
     })
@@ -270,7 +270,7 @@ def supprimer_produit(request, produit_id):
 
 def liste_produits(request):
     produits = Produit.objects.all()
-    return render(request, 'liste_produits.html', {
+    return render(request, 'admindashboard/liste_produits.html', {
         'produits': produits
     })
 

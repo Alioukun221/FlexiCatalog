@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load static %}
+
+{% block title %}Ajouter un produit - Étape 2{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ajouter_produit_etape2.css' %}">
+  
+
+{% endblock %}
+
 
 {% block content %}
 <div class="container mt-4">
@@ -60,34 +69,5 @@
     </div>
 </div>
 
-<style>
-    .form-control {
-        border-radius: 0.5rem;
-        padding: 0.75rem;
-        border: 1px solid #ced4da;
-    }
 
-    .form-control:focus {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
-    }
-
-    .card {
-        border: none;
-        border-radius: 1rem;
-    }
-
-    .card-header {
-        border-radius: 1rem 1rem 0 0 !important;
-    }
-
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-    }
-
-    .alert {
-        border-radius: 0.5rem;
-    }
-</style>
 {% endblock %}

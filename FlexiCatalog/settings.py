@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # MongoDB connection
 mongoengine.connect(
     db='flexicatalog',
-    host='mongodb://localhost:27017',
+    host='mongodb+srv://sorolj:DIL0Us7DqtuzTciI@cluster0.l0hi9un.mongodb.net/',
     alias='default'
 )
 

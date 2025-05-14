@@ -181,6 +181,8 @@ class Produit(Document):
     image_url = StringField() 
     categorie = StringField(required=True, choices=list(CATEGORIES.keys()))
     marque = StringField(required=True, max_length=100)
+    # note = IntField(required= False, default=0)
+    # commentaires = ListField(EmbeddedDocumentField('Commentaire'))
     date_creation = DateTimeField(default=datetime.utcnow)
     date_modification = DateTimeField(default=datetime.utcnow)
 
