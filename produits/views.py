@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
 from django.contrib import messages
 from .models import Produit, Categorie, CATEGORIES
 from datetime import datetime
+from mongoengine.queryset.visitor import Q
 
 
 def afficher_produits(request):
@@ -16,9 +16,9 @@ def liste_categories(request):
 
 def detail_categorie(request, slug):
     categorie = Categorie.objects.get(slug=slug)
-    produits = Produit.objects.filter(categorie=categorie.nom)
+    produits = Produit.objects.filter(categorie__icontains=categorie.nom)
     return render(request, 'produits/detail_categorie.html', {'categorie': categorie, 'produits': produits})
-    
+
 
 def afficher_produit_spécifique(request, slug):
     produit = Produit.objects.get(slug=slug)
