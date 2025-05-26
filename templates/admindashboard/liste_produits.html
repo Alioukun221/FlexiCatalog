@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/liste_produits.css' %}">
 {% endblock %}
@@ -101,13 +102,17 @@
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{% url 'modifier_produit' produit.id %}" class="btn btn-outline-primary btn-sm">
+                            <a href="{% url 'modifier_produit' produit.slug %}" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-edit"></i> Modifier
                             </a>
-                            <a href="{% url 'supprimer_produit' produit.id %}" class="btn btn-outline-danger btn-sm"
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
-                                <i class="fas fa-trash"></i> Supprimer
-                            </a>
+                            <form method="POST" action="{% url 'supprimer_produit' produit.slug %}"
+                                style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -147,8 +152,6 @@
     </nav>
     {% endif %}
 </div>
-
-
 
 {% block extra_js %}
 <script src="{% static 'js/liste_produits.js' %}"></script>
