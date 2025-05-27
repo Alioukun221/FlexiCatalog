@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%block extra_css%}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="products-container">
+        <div class="products-grid">
+            {% for produit in produits %}
+            <div class="product-card">
+                <a href="{% url 'produit_spécifique' produit.slug %}">
+                    <div class="product-image-container">
+                        <span class="product-image-label">{{ produit.categorie }}</span>
+                        {% if produit.image_url %}
+                        <img src="{{ produit.image_url }}" class="product-image" alt="{{ produit.nom }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/400x300?text={{ produit.nom }}" alt="{{ produit.nom }}"
+                            class="product-image">
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-info-left">
+                            <span class="product-name">{{ produit.nom }}</span>
+                            <span class="product-category">{{ produit.categorie }}</span>
+                        </div>
+                        <span class="product-price">{{ produit.prix }} FCFA</span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

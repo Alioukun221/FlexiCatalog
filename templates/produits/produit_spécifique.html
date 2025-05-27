@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/produit_spécifique.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="product-page">
+    <div class="product-container">
+        <div class="product-grid">
+            <div class="product-gallery">
+                {% if produit.image_url %}
+                <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="product-image">
+                {% else %}
+                <img src="https://via.placeholder.com/600x600?text={{ produit.nom }}" alt="{{ produit.nom }}"
+                    class="product-image">
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <div class="product-title-row">
+                    <div class="product-title">{{ produit.nom }}</div>
+                    <button class="wishlist-btn" title="Ajouter aux favoris">♡</button>
+                </div>
+
+                <div class="product-price">{{ produit.prix }} FCFA</div>
+                <div class="product-rating">★ ★ ★ ★ ★ <span style="font-size:0.95rem;color:#bdbdbd;">0 avis</span></div>
+                <div class="product-description">{{ produit.description }}</div>
+
+                {% if produit.categorie == 'Smartphones' %}
+                <div class="couleur">
+                    <span>Couleur</span>: {{produit.caracteristiques.couleur}}
+                </div>
+                {% elif produit.categorie == 'Ordinateurs' %}
+                <div class="couleur">
+                    <span>Type d'ordinateur</span>: {{produit.caracteristiques.type_ordinateur}}
+                </div>
+                {% endif %}
+
+                {% if produit.stock > 0 %}
+                <div class="stock-status">En stock ({{ produit.stock }} disponibles)</div>
+                {% else %}
+                <div class="stock-status out-of-stock">Rupture de stock</div>
+                {% endif %}
+
+              
+                {% if produit.stock > 0 %}
+                <form method="post" action="" class="w-100">
+                    {% csrf_token %}
+                    <button type="submit" class="add-to-cart-btn">Ajouter au panier</button>
+                </form>
+                {% else %}
+                <button disabled class="add-to-cart-btn">Indisponible</button>
+                {% endif %}
+                <div class="reassurance-bar">
+                    <div class="reassurance-item">
+                        <span class="reassurance-icon">🔒</span>
+                        Paiement sécurisé
+                    </div>
+                    <div class="reassurance-item">
+                        <span class="reassurance-icon">↩️</span>
+                        Retour gratuit 30j
+                    </div>
+                    <div class="reassurance-item">
+                        <span class="reassurance-icon">🚚</span>
+                        Livraison rapide
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="product-extra-info">
+            {% if produit.categorie == 'Smartphones' %}
+            <div class="extra-block">
+                <h3>Ecran et Processeur</h3>
+                <details>
+                    <summary>Info sur l'écran</summary>{{produit.caracteristiques.ecran}}
+                </details>
+                <details>
+                    <summary>Info sur le processeur</summary>{{produit.caracteristiques.processeur}}
+                </details>
+
+            </div>
+            
+            <div class="extra-block">
+                <h3>Photo et Connectivité</h3>
+                <details>
+                    <summary>Info sur l'appareil photo</summary>{{produit.caracteristiques.appareil_photo}}
+                </details>
+                <details>
+                    <summary>Info sur la connectivité</summary>{{produit.caracteristiques.connectivite}}
+                </details>
+            </div>
+            <div class="extra-block">
+                <h3>Système et Batterie </h3>
+                <details>
+                    <summary>Info sur le système</summary>{{produit.caracteristiques.systeme}}
+                </details>
+                <details>
+                    <summary>Biométrie</summary>{{produit.caracteristiques.biometrie}}
+                </details>
+                <details>
+                    <summary>Info sur la batterie</summary>{{produit.caracteristiques.batterie}}
+                </details>
+                <details>
+                    <summary>Charge Rapide</summary>{{produit.caracteristiques.charge_rapide}}
+                </details>
+                <details>
+                    <summary>Résistance à l'eau</summary>{{produit.caracteristiques.resistance_eau}}
+                </details>
+
+            </div>
+            {% elif produit.categorie == 'Ordinateurs' %}
+            <div class="extra-block">
+                <h3>Ecran et Processeur</h3>
+                <details>
+                    <summary>Info sur l'écran</summary>{{produit.caracteristiques.ecran}}
+                </details>
+                <details>
+                    <summary>Info sur le processeur</summary>{{produit.caracteristiques.processeur}}
+                </details>
+                <details>
+                    <summary>Info sur la carte graphique</summary>{{produit.caracteristiques.carte_graphique}}
+                </details>
+            </div>
+            <div class="extra-block">
+                <h3>Stockage et Mémoire</h3>
+                <details>
+                    <summary>Info sur le stockage</summary>{{produit.caracteristiques.stockage}}
+                </details>
+                <details>
+                    <summary>Info sur la RAM</summary>{{produit.caracteristiques.ram}}
+                </details>
+            </div>
+            <div class="extra-block">
+                <h3>Connectivité et Autres</h3>
+                <details>
+                    <summary>Info sur la Connectivité</summary>{{produit.caracteristiques.connectivite}}
+                </details>
+                <details>
+                    <summary>Info sur la batterie</summary>{{produit.caracteristiques.autonomie}}
+                </details>
+                <details>
+                    <summary>Poids</summary>{{produit.caracteristiques.poids}}
+                </details>
+                <details>
+                    <summary>Système d'exploitation</summary>{{produit.caracteristiques.systeme}}
+                </details>
+                <details>
+                    <summary>Clavier</summary>{{produit.caracteristiques.clavier}}
+                </details>
+            </div>
+            {% endif %}
+        </div>
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h2>Avis clients</h2>
+                <div class="reviews-summary">
+                    <span class="stars">★★★★☆</span>
+                    <span class="reviews-count">4.5/5 (23 avis)</span>
+                    <select class="reviews-filter">
+                        <option>Tous</option>
+                        <option>5 étoiles</option>
+                        <option>4 étoiles</option>
+                        <option>3 étoiles</option>
+                    </select>
+                </div>
+            </div>
+            <div class="review-list">
+                <div class="review-item">
+                    <div class="review-avatar">AB</div>
+                    <div class="review-content">
+                        <div class="review-header">
+                            <span class="review-author">Alice B.</span>
+                            <span class="review-stars">★★★★★</span>
+                        </div>
+                        <div class="review-text">Super produit, conforme à la description !</div>
+                        <div class="review-date">il y a 2 jours</div>
+                        <div class="review-reply">
+                            <span class="reply-label">Réponse vendeur :</span>
+                            Merci pour votre retour !
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="similar-section">
+            <h3>Produits similaires</h3>
+            <div class="similar-products-grid">
+                {% for produit in produits_similaires %}
+                <a href="{% url 'produit_spécifique' produit.slug %}">
+                    <div class="mini-product-card">
+                        <div class="mini-product-img">
+                            <img src="{{ produit.image_url }}" alt="{{ produit.nom }}">
+                            <div class="mini-product-info">
+                                <div class="mini-product-title">{{ produit.nom }}</div>
+                                <div class="mini-product-price">{{ produit.prix }} FCFA</div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,60 +1,79 @@
-// register.js
-document.addEventListener('DOMContentLoaded', function() {
-    const registerForm = document.getElementById('registerForm');
+/**
+ * Fonction pour basculer l'affichage du mot de passe
+ * @param {string} fieldId - L'ID du champ de mot de passe
+ */
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = field.nextElementSibling;
     
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                
-                // Créer un message d'erreur
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message error';
-                messageDiv.textContent = 'Les mots de passe ne correspondent pas';
-                
-                // Rechercher s'il y a déjà des messages
-                const messagesContainer = document.querySelector('.messages');
-                
-                if (messagesContainer) {
-                    // Supprimer les anciens messages d'erreur de mot de passe
-                    const oldPasswordErrors = messagesContainer.querySelectorAll('.message.error');
-                    oldPasswordErrors.forEach(error => {
-                        if (error.textContent.includes('mot de passe')) {
-                            error.remove();
-                        }
-                    });
-                    
-                    // Ajouter le nouveau message
-                    messagesContainer.appendChild(messageDiv);
-                } else {
-                    // Créer un conteneur de messages
-                    const newMessagesContainer = document.createElement('div');
-                    newMessagesContainer.className = 'messages';
-                    newMessagesContainer.appendChild(messageDiv);
-                    
-                    // Insérer le conteneur après le titre h1
-                    const h1 = document.querySelector('h1');
-                    h1.insertAdjacentElement('afterend', newMessagesContainer);
-                }
-                
-                // Mettre en surbrillance les champs de mot de passe
-                document.getElementById('password').style.borderColor = '#d63031';
-                document.getElementById('confirm_password').style.borderColor = '#d63031';
-            }
-        });
+    if (field.type === "password") {
+        field.type = "text";
+        button.textContent = "🔒"; // Changer l'icône quand le mot de passe est visible
+    } else {
+        field.type = "password";
+        button.textContent = "👁️"; // Remettre l'icône originale
+    }
+}
+
+/**
+ * Validation du formulaire
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
         
-        // Réinitialiser les styles de bordure lorsque l'utilisateur commence à taper
-        document.getElementById('password').addEventListener('input', function() {
-            this.style.borderColor = '';
-            document.getElementById('confirm_password').style.borderColor = '';
-        });
+        // Récupération des valeurs
+        const name = document.getElementById('fullname').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const agreeTerms = document.getElementById('agree-terms').checked;
         
-        document.getElementById('confirm_password').addEventListener('input', function() {
-            this.style.borderColor = '';
-            document.getElementById('password').style.borderColor = '';
-        });
+        // Validation simple
+        if (name === '') {
+            alert('Please enter your name');
+            return;
+        }
+        
+        if (email === '') {
+            alert('Please enter your email');
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        if (password === '') {
+            alert('Please enter a password');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        
+        if (!agreeTerms) {
+            alert('You must agree to the Terms & Conditions');
+            return;
+        }
+        
+        // Si tout est valide, on pourrait soumettre le formulaire ici
+        alert('Form submitted successfully!');
+        // form.submit();
+    });
+    
+    /**
+     * Validation simple d'email
+     * @param {string} email - L'adresse email à valider
+     * @returns {boolean} - True si l'email est valide
+     */
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
     }
 });

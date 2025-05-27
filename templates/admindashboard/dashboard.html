@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de bord administrateur{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <h1 class="dashboard-title">Dashboard Administrateur</h1>
+        <div class="dashboard-header-right">
+            <input type="text" class="dashboard-search" placeholder="Recherche...">
+            <div class="dashboard-user">
+                <span class="dashboard-user-name">Jack Snyder</span>
+                <span class="dashboard-user-role">Admin</span>
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="avatar" class="dashboard-avatar">
+            </div>
+        </div>
+    </header>
+
+    <!-- Statistiques -->
+    <div class="dashboard-stats">
+        <div class="stat-card stat-blue">
+            <div class="stat-label">Nombre de produits</div>
+            <div class="stat-value">{{ total_products|default:"0" }}</div>
+        </div>
+        <div class="stat-card stat-purple">
+            <div class="stat-label">Nombre de catégories</div>
+            <div class="stat-value">{{ total_categories|default:"0" }}</div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="stat-label">Total des ventes</div>
+            <div class="stat-value">{{ total_sales|default:"0"|floatformat:2 }} FCFA</div>
+        </div>
+        <div class="stat-card stat-pink">
+            <div class="stat-label">Commandes</div>
+            <div class="stat-value">{{ total_orders|default:"0" }}</div>
+        </div>
+    </div>
+
+    <!-- Grille principale -->
+    <div class="dashboard-main-grid">
+        <!-- Colonne gauche : Graphiques -->
+        <div class="dashboard-graphs">
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h3 class="title-md">Ventes mensuelles</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <div class="chart-header">
+                    <h3 class="title-md">Produits les plus vendus</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Colonne droite : Tableaux -->
+        <div class="dashboard-tables">
+
+            <div class="card mt-6">
+                <div class="table-header">
+                    <h3 class="title-md"> Produits</h3>
+                    <div class="action-buttons">
+                        <a href="{% url 'ajouter_produit_etape1' %}" class="btn btn-success">
+                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Ajouter un nouveau produit
+                        </a>
+                    </div>
+                </div>
+                <div class="categories-table-container">
+                    <table class="categories-table">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Description</th>
+                                <th>Produits</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                            <tr>
+                                <td class="category-cell">
+                                    <div class="category-info">
+                                        {% if category.image_url %}
+                                        <img src="{{ category.image_url }}" alt="{{ category.nom }}"
+                                            class="category-thumbnail">
+                                        {% endif %}
+                                        <span class="category-name">{{ category.nom }}</span>
+                                    </div>
+                                </td>
+                                <td class="description-cell">{{ category.description|truncatechars:100 }}</td>
+                                <td class="count-cell">
+                                    <span class="category-count">{{ category.products.count }}</span>
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="category-actions">
+                                        <a href="" class="btn btn-warning btn-sm" title="Modifier">
+                                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
+                                        <a href="" class="btn btn-danger btn-sm" title="Supprimer">
+                                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="no-categories">
+                                    <p>Aucune catégorie disponible</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configuration des graphiques
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const productsCtx = document.getElementById('productsChart').getContext('2d');
+
+    // Graphique des ventes mensuelles
+    new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Ventes mensuelles',
+                data: [12, 19, 3, 5, 2, 3, 7, 8, 9, 10, 11, 12],
+                borderColor: 'rgb(59, 130, 246)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Graphique des produits les plus vendus
+    new Chart(productsCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Produit 1', 'Produit 2', 'Produit 3', 'Produit 4', 'Produit 5'],
+            datasets: [{
+                label: 'Quantité vendue',
+                data: [65, 59, 80, 81, 56],
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgb(59, 130, 246)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+{% endblock %}
+
+<style>
+    .categories-table-container {
+        overflow-x: auto;
+        padding: 0 20px 20px;
+    }
+
+    .categories-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .categories-table th {
+        text-align: left;
+        padding: 12px;
+        background: #f8fafc;
+        color: #4a5568;
+        font-weight: 600;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .categories-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+
+    .category-cell {
+        min-width: 200px;
+    }
+
+    .category-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .category-thumbnail {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .category-name {
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .description-cell {
+        max-width: 300px;
+        color: #4a5568;
+        font-size: 0.9em;
+    }
+
+    .count-cell {
+        text-align: center;
+    }
+
+    .category-count {
+        display: inline-block;
+        background: #edf2f7;
+        color: #4a5568;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: 500;
+    }
+
+    .actions-cell {
+        width: 100px;
+        text-align: right;
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+
+    .btn-sm {
+        padding: 6px;
+        line-height: 1;
+    }
+
+    .btn-sm .btn-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .no-categories {
+        text-align: center;
+        padding: 40px;
+        color: #718096;
+    }
+
+    @media (max-width: 768px) {
+
+        .categories-table th:nth-child(2),
+        .categories-table td:nth-child(2) {
+            display: none;
+        }
+
+        .category-cell {
+            min-width: 150px;
+        }
+
+        .description-cell {
+            max-width: 200px;
+        }
+    }
+</style>
+
+{% endblock %}

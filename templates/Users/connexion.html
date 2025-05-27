@@ -1,0 +1,484 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexiCatalog - Connexion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+        }
+
+        .modal-container {
+            background-color: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            height: 600px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+            z-index: 10;
+        }
+
+        .illustration-container {
+            flex: 1.2;
+            background-color: #cce9fd;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 600px;
+        }
+
+        .illustration-container::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: linear-gradient(135deg, #65b8ff 0%, #3b96ff 100%);
+            transform: rotate(-5deg);
+            z-index: 1;
+        }
+
+        .illustration-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .illustration-svg {
+            width: 80%;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+        }
+
+        .illustration-text {
+            text-align: center;
+        }
+
+        .illustration-text h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .illustration-text p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .form-side {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #60a5fa;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .form-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 30px;
+            color: #111;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: #f9fafb;
+        }
+
+        input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            background-color: #fff;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin: -5px 0 20px;
+        }
+
+        .forgot-password a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 55%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #60a5fa;
+            font-size: 18px;
+        }
+
+        .form-actions {
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(96, 165, 250, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .login-button:hover {
+            background-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .remember-me input {
+            width: auto;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #60a5fa;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 30px;
+        }
+
+        .social-login a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .social-login a:hover {
+            color: #3b82f6;
+        }
+
+        .social-divider {
+            color: #ccc;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .register-link a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Messages flash */
+        .messages {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            list-style-type: none;
+        }
+
+        .messages .success {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .messages .error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .modal-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .illustration-container {
+                display: none;
+            }
+
+            .form-side {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-container">
+        <a href="" class="close-button">×</a>
+        
+        <div class="illustration-container">
+            <div class="illustration-content">
+                <svg class="illustration-svg" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Fond et éléments de base -->
+                    <ellipse cx="300" cy="380" rx="220" ry="40" fill="#fff" opacity="0.3"/>
+                    
+                    <!-- Éléments graphiques décoratifs -->
+                    <circle cx="200" cy="150" r="40" fill="#fff" opacity="0.2"/>
+                    <circle cx="450" cy="100" r="30" fill="#fff" opacity="0.2"/>
+                    <circle cx="370" cy="350" r="20" fill="#fff" opacity="0.2"/>
+                    
+                    <!-- Étoiles décoratives -->
+                    <path d="M180,120 L185,130 L195,132 L187,140 L190,150 L180,145 L170,150 L173,140 L165,132 L175,130 Z" fill="#fff"/>
+                    <path d="M450,180 L453,187 L460,188 L455,193 L457,200 L450,196 L443,200 L445,193 L440,188 L447,187 Z" fill="#fff"/>
+                    <path d="M350,70 L352,75 L358,76 L354,80 L355,85 L350,82 L345,85 L346,80 L342,76 L348,75 Z" fill="#fff"/>
+                    
+                    <!-- Personne avec cadenas (connexion) -->
+                    <circle cx="300" cy="180" r="60" fill="#fff" stroke="#60a5fa" stroke-width="2"/>
+                    <circle cx="300" cy="150" r="25" fill="#60a5fa"/>
+                    <path d="M260,230 C260,190 340,190 340,230" fill="#60a5fa"/>
+                    
+                    <!-- Cadenas -->
+                    <rect x="270" y="260" width="60" height="45" rx="5" fill="#fff" stroke="#60a5fa" stroke-width="2"/>
+                    <rect x="280" y="240" width="40" height="30" rx="10" fill="#60a5fa"/>
+                    <circle cx="300" cy="280" r="8" fill="#60a5fa"/>
+                    <rect x="298" y="280" width="4" height="12" fill="#fff"/>
+                    
+                    <!-- Écrans et éléments visuels connexion -->
+                    <rect x="140" y="320" width="120" height="80" rx="5" fill="#fff" stroke="#fff" stroke-width="2"/>
+                    <path d="M140,340 L260,340" stroke="#e0e0ff" stroke-width="2"/>
+                    <path d="M150,350 L250,350 M150,360 L230,360 M150,370 L250,370" stroke="#e0e0ff" stroke-width="2"/>
+                    
+                    <rect x="410" y="290" width="100" height="70" rx="5" fill="#fff" stroke="#fff" stroke-width="2"/>
+                    <circle cx="430" cy="310" r="10" fill="#60a5fa"/>
+                    <path d="M420,330 L500,330 M420,340 L480,340 M420,350 L470,350" stroke="#e0e0ff" stroke-width="2"/>
+                    
+                    <!-- Connexions entre éléments -->
+                    <path d="M300,320 L300,380 L400,380 L430,350" stroke="#fff" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                    <path d="M300,320 L300,380 L200,380 L180,350" stroke="#fff" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                    
+                    <!-- Cercles de connexion -->
+                    <circle cx="300" cy="380" r="5" fill="#60a5fa"/>
+                    <circle cx="180" cy="350" r="5" fill="#60a5fa"/>
+                    <circle cx="430" cy="350" r="5" fill="#60a5fa"/>
+                </svg>
+                <div class="illustration-text">
+                    <h2>Connexion à votre compte</h2>
+                    <p>Accédez à votre espace pour découvrir des milliers de produits et services</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-side">
+            <div class="header">
+                <div class="logo">F</div>
+                <div class="brand">FlexiCatalog</div>
+            </div>
+            
+            <div class="form-container">
+                <h1>Se connecter</h1>
+                
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur ou email</label>
+                        <input type="text" name="username" id="username" placeholder="john_doe@example.com" required>
+                    </div>
+                    
+                    <div class="form-group password-field">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" name="password" id="password" placeholder="••••••••••••" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">👁️</button>
+                    </div>
+                    
+                    <div class="forgot-password">
+                        <a href="{% url 'reset_password' %}">Mot de passe oublié?</a>
+                    </div>
+                    
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Se souvenir de moi</label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="login-button">Se connecter</button>
+                        
+                        <div class="register-link">
+                            Pas encore de compte ? <a href="{% url 'register' %}">S'inscrire</a>
+                        </div>
+                    </div>
+                    
+                    <div class="social-login">
+                        <a href="#">Facebook</a>
+                        <span class="social-divider">|</span>
+                        <a href="#">LinkedIn</a>
+                        <span class="social-divider">|</span>
+                        <a href="#">Google</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling;
+            
+            if (field.type === "password") {
+                field.type = "text";
+                button.textContent = "🔒";
+            } else {
+                field.type = "password";
+                button.textContent = "👁️";
+            }
+        }
+    </script>
+</body>
+</html>

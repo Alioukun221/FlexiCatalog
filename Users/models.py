@@ -1,8 +1,8 @@
 from django.db import models
-import Users.mongo_config
 from mongoengine import *
-import datetime
+from datetime import datetime
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your models here.
 
@@ -11,21 +11,25 @@ ROLES = ('client', 'admin')
 
 
 class Client(Document):
-    username = StringField(max_length=100, required=True, unique=True)
-    password_hash = StringField(required=True)
+    username = StringField(required=True, unique=True, max_length=50)
     email = EmailField(required=True, unique=True)
-    telephone = StringField(regex=r'^((\+221)|(00221))?[2-9][0-9]{8}$')
-    role = StringField(choices=ROLES, default='client')
-    date_inscription = DateTimeField(default=datetime.utcnow)
+    password = StringField(required=True)  # Stockera le mot de passe hashé
+    role = StringField(default='client')
+    date_inscription = DateTimeField()
     actif = BooleanField(default=True)
-
+    
+    
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+        
+    
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+    
     meta = {
-        'collection': 'Users',
-        'indexes': [
-            'username',
-            'email'
-        ]
+        'collection':'Users'
     }
+
 
 
 class PasswordResetToken(Document):

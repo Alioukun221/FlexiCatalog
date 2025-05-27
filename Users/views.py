@@ -1,241 +1,294 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.utils.crypto import get_random_string
-from django.core.mail import send_mail
-from django.conf import settings
+from django.http import HttpResponse, Http404
 from django.urls import reverse
+from django.contrib import messages
 from django.utils import timezone
-from werkzeug.security import generate_password_hash, check_password_hash
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
 from datetime import datetime, timedelta
+
 from .models import Client, PasswordResetToken
+from .forms import (
+    ClientRegistrationForm, ClientLoginForm, 
+    PasswordResetRequestForm, PasswordResetConfirmForm,
+    ClientProfileUpdateForm, ChangePasswordForm
+)
+
+import secrets
+
+
+
+
 
 def register_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        telephone = request.POST.get('telephone', '')
-       
-        
-        if password != confirm_password:
-            messages.error(request, "Les mots de passe ne correspondent pas")
-            return render(request, 'inscription.html')
-            
-        # Vérifier si l'utilisateur existe déjà
-        try:
-            existing_user = Client.objects(username=username).first()
-            if existing_user:
-                messages.error(request, "Ce nom d'utilisateur existe déjà")
-                return render(request, 'inscription.html')
-            
-            # Vérifier si l'email existe déjà
-            existing_email = Client.objects(email=email).first()
-            if existing_email:
-                messages.error(request, "Cet email est déjà utilisé")
-                return render(request, 'inscription.html')
-                
-            
-            new_client = Client(
-                username=username,
-                email=email,
-                telephone=telephone,
-                role='client',
-                date_inscription=datetime.utcnow(),
-                actif=True
-            )
-            new_client.set_password(password) 
-            new_client.save()
-                
-            messages.success(request, "Compte créé avec succès. Veuillez vous connecter.")
-            return redirect('login')
-                
-        except Exception as e:
-            messages.error(request, f"Une erreur est survenue: {str(e)}")
-            return render(request, 'inscription.html')
+    """Vue pour l'inscription d'un nouveau client"""
+    """ if 'client_id' in request.session:
+        return redirect('dashboard')   """# Rediriger si déjà connecté
     
-    return render(request, 'inscription.html')
+    if request.method == 'POST':
+        form = ClientRegistrationForm(request.POST)
+        if form.is_valid():
+            client = form.save()
+            request.session['client_id'] = str(client.id)
+            messages.success(request, "Votre compte a été créé avec succès!")
+            return redirect('login')
+    else:
+        form = ClientRegistrationForm()
+    
+    return render(request, 'Users/inscription.html', {'form': form})
+
 
 def login_view(request):
+    
     if request.method == 'POST':
-        username_or_email = request.POST.get('username') 
-        password = request.POST.get('password')
-        
-        try:
-            # Chercher par nom d'utilisateur ou email
-            client = Client.objects(username=username_or_email).first()
-            if not client:
-                client = Client.objects(email=username_or_email).first()
-                
-            if client and client.check_password(password):
-                # Vérifier si le compte est actif
-                if not client.actif:
-                    messages.error(request, "Votre compte est désactivé. Veuillez contacter l'administrateur.")
-                    return render(request, 'connexion.html')
-                
-                # Créer une session pour l'utilisateur
-                request.session['user_id'] = str(client.id)
-                request.session['username'] = client.username
-                request.session['email'] = client.email
-                request.session['role'] = client.role
-                
-                messages.success(request, f"Bienvenue, {client.username}!")
-                return redirect('home') 
-            else:
-                messages.error(request, "Nom d'utilisateur/email ou mot de passe incorrect")
-        except Exception as e:
-            messages.error(request, f"Une erreur est survenue: {str(e)}")
+        form = ClientLoginForm(request.POST)
+        if form.is_valid():
+            client = form.cleaned_data['client']
+            request.session['client_id'] = str(client.id)
+            #messages.success(request, f"Bienvenue, {client.username}!")
+            
+            # Redirection selon le rôle
+            # comment enregistrer un user comme admin ?
+            if client.role == 'admin':
+                return redirect('admin_dashboard')
+            return redirect('dashboard')
+    else:
+        form = ClientLoginForm()
     
-    return render(request, 'connexion.html')
+    return render(request, 'Users/connexion.html', {'form': form})
 
-def logout_view(request):
-    # Supprimer les informations de session
-    for key in list(request.session.keys()):
-        del request.session[key]
+
+def logout(request):
+    """Vue pour la déconnexion"""
+    if 'client_id' in request.session:
+        del request.session['client_id']
+        messages.success(request, "Vous avez été déconnecté avec succès.")
     
-    messages.success(request, "Vous avez été déconnecté avec succès")
     return redirect('login')
 
-def home_view(request):
-    # Vérifier si l'utilisateur est connecté
-    if 'user_id' not in request.session:
-        return redirect('login')
-    
-    return render(request, 'home.html')
 
-def password_reset_request_view(request):
+def password_reset_request(request):
+    """Vue pour demander une réinitialisation de mot de passe"""
     if request.method == 'POST':
-        email = request.POST.get('email')
-        
-        try:
-            client = Client.objects(email=email).first()
+        form = PasswordResetRequestForm(request.POST)
+        if form.is_valid():
+            reset_token = form.generate_token()
             
+            # Préparer l'email de réinitialisation
+            reset_url = request.build_absolute_uri(
+                reverse('password_reset_confirm', args=[reset_token.token])
+            )
             
-            if client:
-                # Supprimer les anciens tokens pour cet utilisateur
-                PasswordResetToken.objects(client=client).delete()
-                
-                # Creation d'un nouveau token pour l'utlisateur 
-                token = get_random_string(64)
-                
-                # Temps d'expiration
-                expires_at = timezone.now() + timedelta(hours=24)
-                
-                # Token save dans la base de donnee
-                reset_token = PasswordResetToken(
-                    client=client,
-                    token=token,
-                    expires_at=expires_at
-                )
-                reset_token.save()
-                
-                # l'url de reinitialisation 
-                reset_url = request.build_absolute_uri(
-                    reverse('password_reset_confirm', kwargs={'token': token})
-                )
-                
-                # Envoyer l'email
-                send_mail(
-                    'Réinitialisation de votre mot de passe',
-                    f'Bonjour {client.username},\n\n'
-                    f'Vous avez demandé une réinitialisation de mot de passe. '
-                    f'Veuillez cliquer sur le lien suivant pour définir un nouveau mot de passe :\n\n'
-                    f'{reset_url}\n\n'
-                    f'Ce lien est valable pendant 24 heures.\n\n'
-                    f'Si vous n\'avez pas demandé cette réinitialisation, ignorez cet email.\n\n'
-                    f'Cordialement,\n'
-                    f'L\'équipe de votre application',
-                    settings.DEFAULT_FROM_EMAIL,
-                    [client.email],
-                    fail_silently=False,
-                )
+            email_subject = "Réinitialisation de votre mot de passe"
+            email_body = render_to_string('Users/email.html', {
+                'user': reset_token.client,
+                'reset_url': reset_url,
+                'expiry_time': '24 heures'
+            })
             
-            messages.success(request, 
-                "Si l'adresse e-mail existe dans notre système, vous recevrez "
-                "un e-mail avec les instructions pour réinitialiser votre mot de passe."
+            # Envoyer l'email
+            send_mail(
+                email_subject,
+                email_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [reset_token.client.email],
+                html_message=email_body,
+                fail_silently=False
+            )
+            
+            messages.success(
+                request, 
+                "Un email contenant les instructions de réinitialisation de mot de passe "
+                "a été envoyé à votre adresse email."
             )
             return redirect('login')
-            
-        except Exception as e:
-            messages.error(request, f"Une erreur est survenue: {str(e)}")
+    else:
+        form = PasswordResetRequestForm()
     
-    return render(request, 'password_reset_request.html')
+    return render(request, 'Users/password_reset.html', {'form': form})
 
-def password_reset_confirm_view(request, token):
-    try:
-        # Vérifier si le token existe et est valide
-        reset_token = PasswordResetToken.objects(
-            token=token,
-            expires_at__gt=timezone.now(),
-            used=False
-        ).first()
-        
-        if not reset_token:
-            messages.error(request, "Le lien de réinitialisation est invalide ou a expiré.")
-            return redirect('password_reset_request')
-        
-        # Afficher le formulaire pour définir un nouveau mot de passe
-        if request.method == 'POST':
-            new_password = request.POST.get('new_password')
-            confirm_password = request.POST.get('confirm_password')
-            
-            # Vérification de la correspondance des deux mots de passe 
-            if new_password != confirm_password:
-                messages.error(request, "Les mots de passe ne correspondent pas")
-                return render(request, 'password_reset_confirm.html', {'token': token})
-            
-            # Mise a jour du token 
-            client = reset_token.client
-            client.set_password(new_password)
-            client.save()
-            
-            # Marquer le token comme utilisé
-            reset_token.used = True
-            reset_token.save()
-            
-            messages.success(request, "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.")
-            return redirect('login')
-        
-        return render(request, 'password_reset_confirm.html', {'token': token})
-        
-    except Exception as e:
-        messages.error(request, f"Une erreur est survenue: {str(e)}")
+
+
+def password_reset_confirm(request, token):
+    token_obj = PasswordResetToken.objects(
+        token=token,
+        used=False,
+        expires_at__gt=timezone.now()
+    ).first()
+    
+    if not token_obj:
+        messages.error(
+            request, 
+            "Ce lien de réinitialisation est invalide ou a expiré. "
+            "Veuillez faire une nouvelle demande."
+        )
         return redirect('password_reset_request')
-
-def password_change_view(request):
-    """Vue pour changer le mot de passe (pour les utilisateurs connectés)"""
-    # Vérifier si l'utilisateur est connecté
-    if 'user_id' not in request.session:
-        return redirect('login')
     
     if request.method == 'POST':
-        current_password = request.POST.get('current_password')
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
-        
-        # Vérifier si les nouveaux mots de passe correspondent
-        if new_password != confirm_password:
-            messages.error(request, "Les nouveaux mots de passe ne correspondent pas")
-            return render(request, 'password_change.html')
-        
-        try:
-            # Récupérer l'utilisateur actuel
-            user_id = request.session['user_id']
-            client = Client.objects(id=user_id).first()
-            
-            # Vérifier l'ancien mot de passe
-            if not client.check_password(current_password):
-                messages.error(request, "Le mot de passe actuel est incorrect")
-                return render(request, 'password_change.html')
-            
-            # Mettre à jour le mot de passe
-            client.set_password(new_password)
-            client.save()
-            
-            messages.success(request, "Votre mot de passe a été modifié avec succès")
-            return redirect('profile')  # Rediriger vers le profil ou une autre page
-            
-        except Exception as e:
-            messages.error(request, f"Une erreur est survenue: {str(e)}")
+        form = PasswordResetConfirmForm(token, request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(
+                    request, 
+                    "Votre mot de passe a été réinitialisé avec succès. "
+                    "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
+                )
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, "Une erreur s'est produite lors de la réinitialisation.")
+        else:
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
+    else:
+        form = PasswordResetConfirmForm(token)
     
-    return render(request, 'password_change.html')
+    return render(request, 'Users/change_password.html', {'form': form})
+
+
+def dashboard(request):
+    """Vue pour le tableau de bord client"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    client = Client.objects.get(id=request.session['client_id'])
+    
+    return render(request, 'client/dashboard.html', {'client': client})
+
+
+def admin_dashboard(request):
+    """Vue pour le tableau de bord administrateur"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    client = Client.objects.get(id=request.session['client_id'])
+    
+    # Vérifier si l'utilisateur est un administrateur
+    if client.role != 'admin':
+        messages.error(request, "Vous n'avez pas les droits d'accès à cette page.")
+        return redirect('dashboard')
+    
+    # Liste de tous les clients pour l'administrateur
+    all_clients = Client.objects.all()
+    
+    return render(request, 'admin/dashboard.html', {
+        'client': client,
+        'all_clients': all_clients
+    })
+
+
+def profile(request):
+    """Vue pour afficher et modifier le profil utilisateur"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    client = Client.objects.get(id=request.session['client_id'])
+    
+    if request.method == 'POST':
+        form = ClientProfileUpdateForm(client, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Votre profil a été mis à jour avec succès!")
+            return redirect('profile')
+    else:
+        form = ClientProfileUpdateForm(client)
+    
+    return render(request, 'Users/profil_user.html', {'form': form, 'client': client})
+
+
+def change_password(request):
+    """Vue pour changer le mot de passe"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    client = Client.objects.get(id=request.session['client_id'])
+    
+    if request.method == 'POST':
+        form = ChangePasswordForm(client, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Votre mot de passe a été changé avec succès!")
+            return redirect('profile')
+    else:
+        form = ChangePasswordForm(client)
+    
+    return render(request, 'client/change_password.html', {'form': form})
+
+
+def admin_client_list(request):
+    """Vue pour la liste des clients (admin)"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    client = Client.objects.get(id=request.session['client_id'])
+    
+    # Vérifier si l'utilisateur est un administrateur
+    if client.role != 'admin':
+        messages.error(request, "Vous n'avez pas les droits d'accès à cette page.")
+        return redirect('dashboard')
+    
+    clients = Client.objects.all()
+    
+    return render(request, 'admin/client_list.html', {'clients': clients})
+
+
+def admin_client_toggle_status(request, client_id):
+    """Vue pour activer/désactiver un client (admin)"""
+    if 'client_id' not in request.session:
+        return redirect('login')
+    
+    admin = Client.objects.get(id=request.session['client_id'])
+    
+    # Vérifier si l'utilisateur est un administrateur
+    if admin.role != 'admin':
+        messages.error(request, "Vous n'avez pas les droits d'accès à cette fonctionnalité.")
+        return redirect('dashboard')
+    
+    try:
+        target_client = Client.objects.get(id=client_id)
+        
+        # Éviter de désactiver son propre compte
+        if str(target_client.id) == request.session['client_id']:
+            messages.error(request, "Vous ne pouvez pas désactiver votre propre compte.")
+            return redirect('admin_client_list')
+        
+        # Basculer le statut
+        target_client.actif = not target_client.actif
+        target_client.save()
+        
+        status = "activé" if target_client.actif else "désactivé"
+        messages.success(request, f"Le compte de {target_client.username} a été {status}.")
+        
+    except Client.DoesNotExist:
+        messages.error(request, "Client non trouvé.")
+    
+    return redirect('admin_client_list')
+
+
+# Middleware pour vérifier l'authentification
+def auth_middleware(get_response):
+    def middleware(request):
+        # Vérifier si l'utilisateur est connecté
+        if 'client_id' in request.session:
+            try:
+                client = Client.objects.get(id=request.session['client_id'])
+                
+                # Vérifier si le compte est actif
+                if not client.actif:
+                    # Déconnecter l'utilisateur si son compte a été désactivé
+                    del request.session['client_id']
+                    messages.error(
+                        request, 
+                        "Votre compte a été désactivé. Veuillez contacter l'administrateur."
+                    )
+                    return redirect('login')
+                
+            except Client.DoesNotExist:
+                # Déconnecter si l'ID du client n'existe pas
+                del request.session['client_id']
+                return redirect('login')
+        
+        response = get_response(request)
+        return response
+    
+    return middleware

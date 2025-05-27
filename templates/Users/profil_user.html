@@ -1,0 +1,936 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* SECTION POUR HEADER INCLUDE */
+        .header-section {
+            /* Espace réservé pour votre header */
+            height: auto;
+            width: 100%;
+        }
+
+        /* SECTION PRINCIPALE DU PROFIL */
+        .main-content {
+            padding: 20px 0;
+            min-height: calc(100vh - 200px); /* Ajustez selon la hauteur de votre header/footer */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .profile-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-avatar svg {
+            width: 60px;
+            height: 60px;
+            opacity: 0.8;
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #4CAF50;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid white;
+        }
+
+        .avatar-upload svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .profile-status {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .profile-body {
+            padding: 40px 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .verification-status {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .verification-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .verification-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .verification-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-missing {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px 0;
+            border-top: 1px solid #e9ecef;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* POPUP DE SUCCÈS */
+        .success-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            animation: popIn 0.4s ease forwards;
+        }
+
+        .popup-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 0.6s ease;
+        }
+
+        .popup-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .popup-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .popup-message {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .popup-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .popup-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* SECTION POUR FOOTER INCLUDE */
+        .footer-section {
+            /* Espace réservé pour votre footer */
+            height: auto;
+            width: 100%;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .profile-header {
+                padding: 30px 20px;
+            }
+
+            .profile-body {
+                padding: 30px 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .popup-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="header-section">
+      <!--   {% comment %}
+        {% include 'includes/header.html' %}
+        {% endcomment %} -->
+ 
+    </div>
+
+    <!-- SECTION PRINCIPALE DU PROFIL -->
+    <div class="main-content">
+        <div class="container">
+            <div class="profile-container">
+                <!-- Header du profil -->
+                <div class="profile-header">
+                    <div class="profile-avatar" onclick="triggerFileInput()">
+                        {% if client.photo %}
+                            <img src="{% static  'img/profile.jpg' %}" alt="Photo de profil">
+                        {% else %}
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        {% endif %}
+                        <div class="avatar-upload">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <h1 class="profile-name" id="displayName">{{ client.prenom }} {{ client.nom }}</h1>
+                    <div class="profile-status">
+                        <span id="statusText">
+                            {% if client.is_verified %}
+                                Profil Vérifié
+                            {% else %}
+                                Profil Actif
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+            
+                <div class="profile-body">
+                    <form method="post" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+                        
+                        
+                        <input type="file" id="avatarInput" name="photo" accept="image/*" style="display: none;" onchange="handleAvatarUpload(this)">
+                        
+                        <!-- Informations personnelles -->
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.58L19 8l-9 9z"/>
+                                </svg>
+                                Informations personnelles
+                            </h2>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="id_prenom">Prénom *</label>
+                                   <!--  {{ form.prenom }} -->
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_nom">Nom *</label>
+                                   <!--  {{ form.nom }} -->
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_email">Email *</label>
+                                    {{ form.email }}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_telephone">Téléphone</label>
+                                    <!-- {{ form.telephone }} -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Localisation -->
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                Localisation
+                            </h2>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="id_adresse">Adresse</label>
+                                    <!-- {{ form.adresse }} -->
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_ville">Ville</label>
+                                   <!--  {{ form.ville }} -->
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_code_postal">Code postal</label>
+                                   <!--  {{ form.code_postal }} -->
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_pays">Pays</label>
+                                    <!-- {{ form.pays }} -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        {% if form.bio %}
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                                </svg>
+                                À propos
+                            </h2>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="id_bio">Description personnelle</label>
+                                {{ form.bio }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        
+                        <div class="form-section">
+                            <h2 class="section-title">
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.68 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5l-4-4 1.41-1.41L13 14.17l6.59-6.58L21 9l-8 8z"/>
+                                </svg>
+                                Vérifications
+                            </h2>
+                            
+                            <div class="verification-status">
+                                <div class="verification-item">
+                                    <div class="verification-label">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                        </svg>
+                                        Email
+                                    </div>
+                                    <span class="status-badge {% if client.email_verified %}status-verified{% else %}status-pending{% endif %}">
+                                        {% if client.email_verified %}Vérifié{% else %}En attente{% endif %}
+                                    </span>
+                                </div>
+                                
+                                <div class="verification-item">
+                                    <div class="verification-label">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                        </svg>
+                                        Téléphone
+                                    </div>
+                                    <span class="status-badge {% if client.telephone_verified %}status-verified{% else %}status-pending{% endif %}">
+                                        {% if client.telephone_verified %}Vérifié{% else %}En attente{% endif %}
+                                    </span>
+                                </div>
+                                
+                                <div class="verification-item">
+                                    <div class="verification-label">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                                        </svg>
+                                        Pièce d'identité
+                                    </div>
+                                    <span class="status-badge {% if client.id_verified %}status-verified{% else %}status-missing{% endif %}">
+                                        {% if client.id_verified %}Vérifié{% else %}Non fournie{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                </svg>
+                                Annuler
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="saveBtn">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                                </svg>
+                                Sauvegarder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP DE SUCCÈS -->
+    <div class="success-popup" id="successPopup">
+        <div class="popup-content">
+            <div class="popup-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+            <h3 class="popup-title">Parfait !</h3>
+            <p class="popup-message">Votre profil a été mis à jour avec succès. Toutes vos modifications ont été sauvegardées.</p>
+            <button class="popup-button" onclick="closeSuccessPopup()">Super !</button>
+        </div>
+    </div>
+
+    
+    <div class="footer-section">
+       <!--  {% comment %}
+        {% include 'includes/footer.html' %}
+        {% endcomment %} -->
+        <!-- Remplacez ce commentaire par votre include de footer -->
+    </div>
+
+    <script>
+        // Variables pour gérer l'état du formulaire
+        let originalFormData = {};
+        let isFormSubmitting = false;
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            saveOriginalFormData();
+            
+            // Vérifier s'il y a des messages Django de succès
+           /*  {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        showSuccessPopup();
+                    {% endif %}
+                {% endfor %}
+            {% endif %} */
+
+            // Ajouter les classes CSS aux champs du formulaire Django
+            styleFormFields();
+        });
+
+        // Sauvegarder les données originales du formulaire
+        function saveOriginalFormData() {
+            const form = document.getElementById('profileForm');
+            const formData = new FormData(form);
+            originalFormData = {};
+            for (let [key, value] of formData.entries()) {
+                originalFormData[key] = value;
+            }
+        }
+
+        
+        function styleFormFields() {
+            const formFields = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
+            formFields.forEach(field => {
+                field.classList.add('form-input');
+                if (field.tagName.toLowerCase() === 'textarea') {
+                    field.classList.add('form-textarea');
+                }
+            });
+        }
+
+        // Gérer l'upload d'avatar
+        function triggerFileInput() {
+            document.getElementById('avatarInput').click();
+        }
+
+        function handleAvatarUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatar = document.querySelector('.profile-avatar');
+                    avatar.innerHTML = `
+                        <img src="${e.target.result}" alt="Photo de profil">
+                        <div class="avatar-upload">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Mettre à jour le nom affiché en temps réel
+        function updateDisplayName() {
+            const firstName = document.querySelector('[name="prenom"]')?.value || '';
+            const lastName = document.querySelector('[name="nom"]')?.value || '';
+            const displayName = document.getElementById('displayName');
+            
+            if (firstName || lastName) {
+                displayName.textContent = `${firstName} ${lastName}`.trim();
+            }
+        }
+
+        // Écouter les changements sur les champs nom/prénom
+        document.addEventListener('input', function(e) {
+            if (e.target.name === 'prenom' || e.target.name === 'nom') {
+                updateDisplayName();
+            }
+        });
+
+        // Réinitialiser le formulaire
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir annuler vos modifications ?')) {
+                location.reload();
+            }
+        }
+
+        // Afficher le popup de succès
+        function showSuccessPopup() {
+            const popup = document.getElementById('successPopup');
+            popup.style.display = 'flex';
+            
+            // Fermer automatiquement après 5 secondes
+            setTimeout(() => {
+                closeSuccessPopup();
+            }, 5000);
+        }
+
+        // Fermer le popup de succès
+        function closeSuccessPopup() {
+            const popup = document.getElementById('successPopup');
+            popup.style.display = 'none';
+        }
+
+        // Gérer la soumission du formulaire
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            if (isFormSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+            
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.innerHTML;
+            
+            // Animation du bouton pendant la soumission
+            saveBtn.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;">
+                    <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                </svg>
+                Sauvegarde...
+            `;
+            saveBtn.disabled = true;
+            isFormSubmitting = true;
+            
+            // Si la soumission échoue, restaurer le bouton
+            setTimeout(() => {
+                if (isFormSubmitting) {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                    isFormSubmitting = false;
+                }
+            }, 10000); // 10 secondes de timeout
+        });
+
+        // Fermer le popup en cliquant à l'extérieur
+        document.getElementById('successPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSuccessPopup();
+            }
+        });
+
+        // Fermer le popup avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSuccessPopup();
+            }
+        });
+
+        // Validation côté client simple
+        function validateForm() {
+            const requiredFields = document.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#dc3545';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e1e5e9';
+                }
+            });
+            
+            // Validation email
+            const emailField = document.querySelector('[name="email"]');
+            if (emailField && emailField.value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailField.value)) {
+                    emailField.style.borderColor = '#dc3545';
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Ajouter la validation avant soumission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires correctement.');
+                return false;
+            }
+        });
+
+        // Prévisualisation en temps réel des changements
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('#profileForm input, #profileForm textarea, #profileForm select')) {
+                // Retirer la bordure rouge si l'utilisateur commence à taper
+                if (e.target.style.borderColor === 'rgb(220, 53, 69)') {
+                    e.target.style.borderColor = '#e1e5e9';
+                }
+            }
+        });
+
+        // Détection des changements non sauvegardés
+        function hasUnsavedChanges() {
+            const form = document.getElementById('profileForm');
+            const currentFormData = new FormData(form);
+            
+            for (let [key, value] of currentFormData.entries()) {
+                if (originalFormData[key] !== value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Avertir avant de quitter la page si des changements non sauvegardés
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges() && !isFormSubmitting) {
+                e.preventDefault();
+                e.returnValue = 'Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir quitter cette page ?';
+                return e.returnValue;
+            }
+        });
+
+        // Sauvegarder automatiquement en local (optionnel)
+        function autoSave() {
+            if (typeof(Storage) !== "undefined") {
+                const formData = {};
+                const form = document.getElementById('profileForm');
+                const inputs = form.querySelectorAll('input, textarea, select');
+                
+                inputs.forEach(input => {
+                    if (input.type !== 'file' && input.type !== 'hidden') {
+                        formData[input.name] = input.value;
+                    }
+                });
+                
+                localStorage.setItem('profileFormDraft', JSON.stringify(formData));
+            }
+        }
+
+        // Restaurer depuis la sauvegarde automatique
+        function restoreAutoSave() {
+            if (typeof(Storage) !== "undefined") {
+                const savedData = localStorage.getItem('profileFormDraft');
+                if (savedData) {
+                    const formData = JSON.parse(savedData);
+                    const form = document.getElementById('profileForm');
+                    
+                    Object.keys(formData).forEach(key => {
+                        const field = form.querySelector(`[name="${key}"]`);
+                        if (field && field.type !== 'file') {
+                            field.value = formData[key];
+                        }
+                    });
+                }
+            }
+        }
+
+     
+        function clearAutoSave() {
+            if (typeof(Storage) !== "undefined") {
+                localStorage.removeItem('profileFormDraft');
+            }
+        }
+
+        // Activer la sauvegarde automatique toutes les 30 secondes
+        setInterval(autoSave, 30000);
+
+        
+        function animateOnScroll() {
+            const sections = document.querySelectorAll('.form-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        }
+
+        setTimeout(animateOnScroll, 100);
+    </script>
+</body>
+</html>

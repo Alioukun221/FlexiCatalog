@@ -1,0 +1,53 @@
+.produit-categorie {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.produit-nom {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+    color: #2c3e50;
+}
+
+.produit-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.produit-prix {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.produit-stock {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.stock-eleve {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.stock-moyen {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.stock-bas {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}

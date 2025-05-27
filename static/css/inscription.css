@@ -1,280 +1,204 @@
-/* Variables globales */
-:root {
-  --primary-color: #4a6bff;
-  --secondary-color: #8c9eff;
-  --dark-color: #2a3b4c;
-  --light-color: #f5f7fa;
-  --danger-color: #ff5252;
-  --success-color: #4caf50;
-  --text-color: #333;
-  --light-text: #717790;
-  --border-radius: 10px;
-  --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
-}
-
-/* Reset et styles de base */
+/* Reset et styles généraux */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 /* Container principal */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  padding: 20px;
+.modal-container {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 30px;
+    position: relative;
 }
 
-/* Carte de connexion */
-.card {
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  overflow: hidden;
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
 }
 
-.card-content {
-  display: flex;
-  min-height: 600px;
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-/* Côté gauche - Illustration */
-.left-side {
-  flex: 1;
-  background-color: #f8faff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-}
-
-.illustration img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Côté droit - Formulaire */
-.right-side {
-  flex: 1;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Logo */
 .logo {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+    width: 36px;
+    height: 36px;
+    background-color: #111;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
 }
 
-.logo-circle {
-  width: 40px;
-  height: 40px;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
+.brand {
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
 }
 
-.logo-circle span {
-  color: white;
-  font-weight: bold;
-  font-size: 20px;
+/* Content */
+.content {
+    display: flex;
+    margin-top: 20px;
 }
 
-.logo h3 {
-  color: var(--dark-color);
-  font-size: 18px;
+.illustration {
+    flex: 1;
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Formulaire */
 .form-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    flex: 1;
 }
 
-.form-container h1 {
-  font-size: 28px;
-  margin-bottom: 30px;
-  color: var(--dark-color);
+h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #111;
 }
 
+/* Form styles */
 .form-group {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  font-size: 16px;
-  transition: var(--transition);
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(74, 107, 255, 0.2);
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
 }
 
-.forgot-password {
-  text-align: right;
+input:focus {
+    border-color: #60a5fa;
 }
 
-.forgot-password a {
-  color: var(--light-text);
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
+input::placeholder {
+    color: #999;
 }
 
-.forgot-password a:hover {
-  color: var(--primary-color);
+.password-field {
+    position: relative;
 }
 
-.btn-primary {
-  width: 100%;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 15px;
-  border-radius: var(--border-radius);
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: var(--transition);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
 }
 
-.btn-primary:hover {
-  background-color: #3a59e0;
-  transform: translateY(-2px);
+.register-button {
+    width: 100%;
+    padding: 14px;
+    background-color: #60a5fa;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
 }
 
-/* Pied de formulaire */
-.form-footer {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.register-button:hover {
+    background-color: #3b82f6;
 }
 
-.alternative-login {
-  text-align: center;
-  font-size: 14px;
-  color: var(--light-text);
+/* Terms and social login */
+.terms {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #555;
 }
 
-.alternative-login a {
-  color: var(--primary-color);
-  font-weight: bold;
-  text-decoration: none;
-  transition: var(--transition);
+.terms input {
+    width: auto;
+    margin-right: 10px;
+    margin-top: 3px;
 }
 
-.alternative-login a:hover {
-  text-decoration: underline;
+.terms a {
+    color: #111;
+    text-decoration: none;
 }
 
 .social-login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 20px;
 }
 
-.social-btn {
-  color: var(--light-text);
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
+.social-login a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 14px;
 }
 
-.social-btn:hover {
-  color: var(--primary-color);
+.social-divider {
+    color: #ccc;
 }
 
-.separator {
-  color: #ddd;
-}
-
-/* Messages d'erreur/succès */
-.messages {
-  margin-bottom: 20px;
-}
-
-.message {
-  padding: 10px 15px;
-  border-radius: var(--border-radius);
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.error {
-  background-color: rgba(255, 82, 82, 0.1);
-  color: var(--danger-color);
-  border: 1px solid rgba(255, 82, 82, 0.3);
-}
-
-.success {
-  background-color: rgba(76, 175, 80, 0.1);
-  color: var(--success-color);
-  border: 1px solid rgba(76, 175, 80, 0.3);
-}
-
-/* Responsive */
-@media (max-width: 992px) {
-  .card-content {
-    flex-direction: column;
-  }
-  
-  .left-side {
-    display: none;
-  }
-  
-  .right-side {
-    padding: 30px;
-  }
-}
-
-@media (max-width: 576px) {
-  .container {
-    padding: 10px;
-  }
-  
-  .right-side {
-    padding: 20px;
-  }
-  
-  .form-container h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  input[type="text"],
-  input[type="password"],
-  .btn-primary {
-    padding: 12px;
-  }
+/* Responsive design */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .illustration {
+        display: none;
+    }
+    
+    .form-container {
+        width: 100%;
+    }
 }
