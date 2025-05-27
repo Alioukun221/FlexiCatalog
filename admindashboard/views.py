@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .form import CategorieForm, ProduitFormEtape1, ProduitFormEtape2
 from produits.models import Produit, CATEGORIES, Categorie
-import json
 import os
 import uuid
 import logging
@@ -202,8 +201,8 @@ def ajouter_produit_etape2(request):
         'produit_data': produit_data
     })
 
-def modifier_produit(request, produit_id):
-    produit = get_object_or_404(Produit, id=produit_id)
+def modifier_produit(request, slug):
+    produit = Produit.objects.get(slug=slug)
     if request.method == 'POST':
         form = ProduitFormEtape1(request.POST, request.FILES)
         if form.is_valid():
@@ -244,27 +243,30 @@ def modifier_produit(request, produit_id):
         }
         form = ProduitFormEtape1(initial=initial_data)
     
-    return render(request, 'ajouter_produit_etape1.html', {
+    return render(request, 'admindashboard/ajouter_produit_etape1.html', {
         'form': form,
         'produit': produit,
         'categories': CATEGORIES,
         'is_edit': True
     })
 
-def supprimer_produit(request, produit_id):
-    produit = Produit.objects.get(id=produit_id)
-    if request.method == 'POST':
-        try:
-            # Supprimer l'image si elle existe
-            if produit.image_url:
-                image_path = os.path.join('static', 'img', os.path.basename(produit.image_url))
-                if os.path.exists(image_path):
-                    os.remove(image_path)
-            
-            produit.delete()
-            messages.success(request, 'Produit supprimé avec succès!')
-        except Exception as e:
-            messages.error(request, f'Erreur lors de la suppression du produit: {str(e)}')
+def supprimer_produit(request, slug):
+    try:
+        produit = Produit.objects.get(slug=slug)
+        if request.method == 'POST':
+            try:
+                # Supprimer l'image
+                if produit.image_url:
+                    image_path = os.path.join('static', 'img', os.path.basename(produit.image_url))
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+                
+                produit.delete()
+                messages.success(request, 'Produit supprimé avec succès!')
+            except Exception as e:
+                messages.error(request, f'Erreur lors de la suppression du produit: {str(e)}')
+    except Produit.DoesNotExist:
+        messages.error(request, 'Le produit demandé n\'existe pas.')
     
     return redirect('liste_produits')
 
