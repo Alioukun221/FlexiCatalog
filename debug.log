@@ -384,6 +384,7 @@ DEBUG 2025-05-14 19:22:48,299 form Champ ajouté: caracteristique_poids (requis: 
 DEBUG 2025-05-14 19:22:48,299 form Champ ajouté: caracteristique_autonomie (requis: False)
 DEBUG 2025-05-14 19:22:48,299 form Champ ajouté: caracteristique_ports (requis: False)
 DEBUG 2025-05-14 19:22:48,300 form Champ ajouté: caracteristique_clavier (requis: False)
+<<<<<<< HEAD
 INFO 2025-05-15 10:09:02,269 views Formulaire soumis avec la catégorie: Audio
 INFO 2025-05-15 10:09:04,902 form Ajout des champs dynamiques pour la catégorie: Audio
 DEBUG 2025-05-15 10:09:04,903 form Champ ajouté: caracteristique_type (requis: True)
@@ -584,3 +585,43 @@ DEBUG 2025-05-15 15:29:32,227 form Champ ajouté: caracteristique_souris (requis:
 DEBUG 2025-05-15 15:29:32,228 form Champ ajouté: caracteristique_connectivite (requis: False)
 DEBUG 2025-05-15 15:29:32,229 form Champ ajouté: caracteristique_rgb (requis: False)
 DEBUG 2025-05-15 15:29:32,229 form Champ ajouté: caracteristique_compatibilite (requis: False)
+=======
+INFO 2025-05-16 14:05:50,901 views Formulaire soumis avec la catégorie: Gaming
+INFO 2025-05-20 02:59:24,617 views Formulaire soumis avec la catégorie: Audio
+INFO 2025-05-20 02:59:24,622 form Ajout des champs dynamiques pour la catégorie: Audio
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_type (requis: True)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_connectivite (requis: True)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_autonomie (requis: True)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_reduction_bruit (requis: False)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_couleur (requis: False)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_puissance (requis: False)
+DEBUG 2025-05-20 02:59:24,623 form Champ ajouté: caracteristique_impedance (requis: False)
+DEBUG 2025-05-20 02:59:24,624 form Champ ajouté: caracteristique_frequence (requis: False)
+DEBUG 2025-05-20 02:59:24,624 form Champ ajouté: caracteristique_microphone (requis: False)
+DEBUG 2025-05-20 02:59:24,624 form Champ ajouté: caracteristique_resistance_eau (requis: False)
+DEBUG 2025-05-20 02:59:24,624 form Champ ajouté: caracteristique_bluetooth_version (requis: False)
+INFO 2025-05-20 02:59:37,280 form Ajout des champs dynamiques pour la catégorie: Audio
+DEBUG 2025-05-20 02:59:37,280 form Champ ajouté: caracteristique_type (requis: True)
+DEBUG 2025-05-20 02:59:37,280 form Champ ajouté: caracteristique_connectivite (requis: True)
+DEBUG 2025-05-20 02:59:37,281 form Champ ajouté: caracteristique_autonomie (requis: True)
+DEBUG 2025-05-20 02:59:37,281 form Champ ajouté: caracteristique_reduction_bruit (requis: False)
+DEBUG 2025-05-20 02:59:37,281 form Champ ajouté: caracteristique_couleur (requis: False)
+DEBUG 2025-05-20 02:59:37,281 form Champ ajouté: caracteristique_puissance (requis: False)
+DEBUG 2025-05-20 02:59:37,282 form Champ ajouté: caracteristique_impedance (requis: False)
+DEBUG 2025-05-20 02:59:37,282 form Champ ajouté: caracteristique_frequence (requis: False)
+DEBUG 2025-05-20 02:59:37,282 form Champ ajouté: caracteristique_microphone (requis: False)
+DEBUG 2025-05-20 02:59:37,282 form Champ ajouté: caracteristique_resistance_eau (requis: False)
+DEBUG 2025-05-20 02:59:37,283 form Champ ajouté: caracteristique_bluetooth_version (requis: False)
+INFO 2025-05-20 02:59:48,555 form Ajout des champs dynamiques pour la catégorie: Audio
+DEBUG 2025-05-20 02:59:48,555 form Champ ajouté: caracteristique_type (requis: True)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_connectivite (requis: True)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_autonomie (requis: True)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_reduction_bruit (requis: False)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_couleur (requis: False)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_puissance (requis: False)
+DEBUG 2025-05-20 02:59:48,556 form Champ ajouté: caracteristique_impedance (requis: False)
+DEBUG 2025-05-20 02:59:48,557 form Champ ajouté: caracteristique_frequence (requis: False)
+DEBUG 2025-05-20 02:59:48,557 form Champ ajouté: caracteristique_microphone (requis: False)
+DEBUG 2025-05-20 02:59:48,557 form Champ ajouté: caracteristique_resistance_eau (requis: False)
+DEBUG 2025-05-20 02:59:48,557 form Champ ajouté: caracteristique_bluetooth_version (requis: False)
+>>>>>>> 7366c0f0d86a01ca94a2d406e3f77f4052bc96ff

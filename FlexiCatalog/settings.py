@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'produits',
     'admindashboard',
-
+    'Users'
 ]
 
 MIDDLEWARE = [
@@ -57,6 +57,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+# c'est pour le hachage du mot de passe avant de le stocker dans la base de donnée
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher'
 ]
 
 ROOT_URLCONF = 'FlexiCatalog.urls'
@@ -77,6 +81,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'FlexiCatalog.wsgi.application'
+# jsfz aenw wnzn euxs
+#c'est pour le mail de reinitialisation du mot de passe 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'bamouhamadoualiou40@gmail.com'
+EMAIL_HOST_PASSWORD = 'jsfz aenw wnzn euxs' 
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 
 # Database
@@ -98,6 +114,9 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -132,6 +151,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATICFILES_DIRS = [BASE_DIR /"static"]
 
 STATIC_URL = 'static/'
 
