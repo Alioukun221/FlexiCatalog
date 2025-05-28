@@ -51,7 +51,7 @@ def login_view(request):
             # Redirection selon le rôle
             # comment enregistrer un user comme admin ?
             if client.role == 'admin':
-                return redirect('admin_dashboard')
+                return redirect('dashboard')
             return redirect('dashboard')
     else:
         form = ClientLoginForm()
@@ -156,26 +156,6 @@ def dashboard(request):
     return render(request, 'client/dashboard.html', {'client': client})
 
 
-def admin_dashboard(request):
-    """Vue pour le tableau de bord administrateur"""
-    if 'client_id' not in request.session:
-        return redirect('login')
-    
-    client = Client.objects.get(id=request.session['client_id'])
-    
-    # Vérifier si l'utilisateur est un administrateur
-    if client.role != 'admin':
-        messages.error(request, "Vous n'avez pas les droits d'accès à cette page.")
-        return redirect('dashboard')
-    
-    # Liste de tous les clients pour l'administrateur
-    all_clients = Client.objects.all()
-    
-    return render(request, 'admin/dashboard.html', {
-        'client': client,
-        'all_clients': all_clients
-    })
-
 
 def profile(request):
     """Vue pour afficher et modifier le profil utilisateur"""
@@ -189,7 +169,7 @@ def profile(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Votre profil a été mis à jour avec succès!")
-            return redirect('profile')
+            #return redirect('profile')
     else:
         form = ClientProfileUpdateForm(client)
     
@@ -215,54 +195,7 @@ def change_password(request):
     return render(request, 'client/change_password.html', {'form': form})
 
 
-def admin_client_list(request):
-    """Vue pour la liste des clients (admin)"""
-    if 'client_id' not in request.session:
-        return redirect('login')
-    
-    client = Client.objects.get(id=request.session['client_id'])
-    
-    # Vérifier si l'utilisateur est un administrateur
-    if client.role != 'admin':
-        messages.error(request, "Vous n'avez pas les droits d'accès à cette page.")
-        return redirect('dashboard')
-    
-    clients = Client.objects.all()
-    
-    return render(request, 'admin/client_list.html', {'clients': clients})
 
-
-def admin_client_toggle_status(request, client_id):
-    """Vue pour activer/désactiver un client (admin)"""
-    if 'client_id' not in request.session:
-        return redirect('login')
-    
-    admin = Client.objects.get(id=request.session['client_id'])
-    
-    # Vérifier si l'utilisateur est un administrateur
-    if admin.role != 'admin':
-        messages.error(request, "Vous n'avez pas les droits d'accès à cette fonctionnalité.")
-        return redirect('dashboard')
-    
-    try:
-        target_client = Client.objects.get(id=client_id)
-        
-        # Éviter de désactiver son propre compte
-        if str(target_client.id) == request.session['client_id']:
-            messages.error(request, "Vous ne pouvez pas désactiver votre propre compte.")
-            return redirect('admin_client_list')
-        
-        # Basculer le statut
-        target_client.actif = not target_client.actif
-        target_client.save()
-        
-        status = "activé" if target_client.actif else "désactivé"
-        messages.success(request, f"Le compte de {target_client.username} a été {status}.")
-        
-    except Client.DoesNotExist:
-        messages.error(request, "Client non trouvé.")
-    
-    return redirect('admin_client_list')
 
 
 # Middleware pour vérifier l'authentification
@@ -292,3 +225,5 @@ def auth_middleware(get_response):
         return response
     
     return middleware
+
+
