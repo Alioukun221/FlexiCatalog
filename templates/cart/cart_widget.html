@@ -1,0 +1,9 @@
+<div class="cart-widget">
+    <a href="{% url 'cart:cart_detail' %}" class="text-decoration-none">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-shopping-cart me-2"></i>
+            <span class="cart-counter badge bg-primary">{{ cart_total_items|default:0 }}</span>
+            <span class="ms-2 d-none d-md-inline">{{ cart_total_price|default:0 }} FCFA</span>
+        </div>
+    </a>
+</div>
