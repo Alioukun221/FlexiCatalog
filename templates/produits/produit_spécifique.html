@@ -95,6 +95,25 @@
                 <div class="couleur">
                     <span>Type d'ordinateur</span>: {{produit.caracteristiques.type_ordinateur}}
                 </div>
+                {% elif produit.categorie == 'Audio' %}
+                <div class="couleur">
+                    <span>Marque</span>: {{produit.marque}}
+                </div>
+                <div class="couleur">
+                    <span>Type</span>: {{produit.caracteristiques.type}}
+                </div>
+                <div class="couleur">
+                    <span>Couleur</span>: {{produit.caracteristiques.couleur}}
+                </div>
+                {% elif produit.categorie == 'Gaming' %}
+                <div class="couleur">
+                    <span>Marque</span>: {{produit.marque}}
+                </div>
+                <div class="couleur">
+                    <span>Type</span>: {{produit.caracteristiques.type_appareil}}
+                </div>
+
+
                 {% endif %}
 
                 {% if produit.stock > 0 %}
@@ -132,15 +151,33 @@
 
                 <div class="reassurance-bar">
                     <div class="reassurance-item">
-                        <span class="reassurance-icon">🔒</span>
+                        <span class="reassurance-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                                <path fill="#e64136" d="M12 17a2 2 0 0 1-2-2c0-1.11.89-2 2-2a2 2 0 0 1 2 2a2 2 0 0 1-2 2m6 3V10H6v10zm0-12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10c0-1.11.89-2 2-2h1V6a5 5 0 0 1 5-5a5 5 0 0 1 5 5v2zm-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3" />
+                            </svg>
+                        </span>
                         Paiement sécurisé
                     </div>
                     <div class="reassurance-item">
-                        <span class="reassurance-icon">↩️</span>
+                        <span class="reassurance-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                                <g fill="none">
+                                    <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z" />
+                                    <path fill="#36a7e6" d="M7.16 10.972A7 7 0 0 1 19.5 15.5a1.5 1.5 0 1 0 3 0c0-5.523-4.477-10-10-10a9.97 9.97 0 0 0-7.418 3.295L4.735 6.83a1.5 1.5 0 1 0-2.954.52l1.042 5.91c.069.391.29.74.617.968c.403.282.934.345 1.385.202l5.644-.996a1.5 1.5 0 1 0-.52-2.954l-2.788.491Z" />
+                                </g>
+                            </svg>
+                        </span>
                         Retour gratuit 30j
                     </div>
                     <div class="reassurance-item">
-                        <span class="reassurance-icon">🚚</span>
+                        <span class="reassurance-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                                <g fill="none" stroke="#e6c636" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                    <path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0m10 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0" />
+                                    <path d="M5 17H3V6a1 1 0 0 1 1-1h9v12m-4 0h6m4 0h2v-6h-8m0-5h5l3 5" />
+                                </g>
+                            </svg>
+                        </span>
                         Livraison rapide
                     </div>
                 </div>
@@ -230,6 +267,76 @@
                     <summary>Clavier</summary>{{produit.caracteristiques.clavier}}
                 </details>
             </div>
+            {% elif produit.categorie == 'Audio' %}
+            <div class="extra-block">
+                <h3>Connectivité et Batterie</h3>
+                <details>
+                    <summary>Info sur la Connectivité</summary>{{produit.caracteristiques.connectivite}}
+                </details>
+                <details>
+                    <summary>Info sur la Batterie</summary>{{produit.caracteristiques.autonomie}}
+                </details>
+            </div>
+            <div class="extra-block">
+                <h3>Version Bluetooth et Autres</h3>
+                <details>
+                    <summary>Info sur la Version Bluetooth</summary>{{produit.caracteristiques.bluetooth_version}}
+                </details>
+                <details>
+                    <summary>Impédance</summary>{{produit.caracteristiques.impedance}}
+                </details>
+                <details>
+                    <summary>Microphone</summary>{{produit.caracteristiques.microphone}}
+                </details>
+                <details>
+                    <summary>Fréquence</summary>{{produit.caracteristiques.frequence}}
+                </details>
+                <details>
+                    <summary>Réduction de Bruit</summary>{{produit.caracteristiques.reduction_bruit}}
+                </details>
+                <details>
+                    <summary>Puissance</summary>{{produit.caracteristiques.puissance}}
+                </details>
+            </div>
+            {% elif produit.categorie == 'Gaming' %}
+            <div class="extra-block">
+                <h3>Processeur et Mémoire</h3>
+                    <details>
+                        <summary>Info sur le processeur</summary>{{produit.caracteristiques.processeur}}
+                    </details>
+                    <details>
+                        <summary>Info sur le stockage</summary>{{produit.caracteristiques.stockage}}
+                    </details>
+                    <details>
+                        <summary>Info sur la RAM</summary>{{produit.caracteristiques.ram}}
+                    </details>
+                    <details>
+                        <summary>Info sur la carte graphique</summary>{{produit.caracteristiques.carte_graphique}}
+                    </details>
+
+            </div>
+            <div class="extra-block">
+                <h3>Connectivité, Compatibilité et Autres</h3>
+                <details>
+                    <summary>Info sur la Connectivité</summary>{{produit.caracteristiques.connectivite}}
+                </details>
+                <details>
+                    <summary>Info sur la compatibilité</summary>{{produit.caracteristiques.compatibilite}}
+                </details>
+                <details>
+                    <summary>clavier ?</summary>{{produit.caracteristiques.clavier}}
+                </details>
+                <details>
+                    <summary>écran ?</summary>{{produit.caracteristiques.ecran}}
+                </details>
+                <details>
+                    <summary>souris ?</summary>{{produit.caracteristiques.souris}}
+                </details>
+                <details>
+                    <summary>rgb ?</summary>{{produit.caracteristiques.rgb}}
+                </details>
+            </div>
+
             {% endif %}
         </div>
 
