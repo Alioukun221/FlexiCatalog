@@ -1,0 +1,248 @@
+/* styles for home.html */
+
+/* Hero Banner Section */
+.hero-banner-section {
+    background-color: #f8f9fa;
+    padding: 60px 0;
+}
+
+.hero-row {
+    min-height: 400px;
+}
+
+.hero-content {
+    padding: 20px;
+}
+
+.hero-title {
+    font-size: 7.5rem;
+    font-weight: bold;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.hero-headline {
+    font-size: 4.5rem;
+    font-weight: 700;
+}
+
+.hero-image-container {
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    margin-left: 700px;
+}
+
+.hero-image-container img {
+    max-width: 100%;
+    height: auto;
+    animation: float 3s ease-in-out infinite;
+    /* Continuous floating animation */
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(20px);
+        /* Move down */
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.hero-image-container img:hover {
+    transform: perspective(1000px) rotateY(10deg);
+    /* 3D effect on hover */
+}
+
+/* Categories Section */
+.categories-section {
+    background-color: #ffffff;
+}
+
+.category-card {
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    aspect-ratio: 4 / 3;
+    /* Make the card slightly rectangular */
+    max-width: 300px;
+    /* Increase the size of the card */
+    margin: 0 auto;
+    /* Center the card */
+    box-shadow: none;
+    border: none;
+    /* Remove border */
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Black overlay */
+    z-index: 1;
+}
+
+.category-card .card-body {
+    position: relative;
+    z-index: 2;
+    /* Ensure text is above the overlay */
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: none;
+    border: none;
+    /* Ensure no border on hover */
+}
+
+.category-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Features Section */
+.features-section {
+    background-color: #f8f9fa;
+}
+
+.feature-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon img {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon img:hover {
+    transform: scale(1.1);
+}
+
+/* Best Sellers Section */
+.best-sellers-section {
+    background-color: #ffffff;
+}
+
+.product-card {
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    border: none;
+    max-width: 300px;
+    margin: 0 auto;
+    box-shadow: none;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: none;
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    /* Fixed height for all images */
+    object-fit: cover;
+    /* Ensure images cover the area without distortion */
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background-color: #f8f9fa;
+}
+
+.newsletter-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    background-color: #f8f9fa;
+    padding: 80px 0;
+}
+
+.testimonial-card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    background: white;
+    padding: 30px;
+    height: 100%;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.testimonial-author img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+}
+
+.testimonial-author-info h5 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.testimonial-author-info p {
+    margin: 5px 0 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.testimonial-rating {
+    color: #ffc107;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.testimonial-rating i {
+    margin-right: 2px;
+}

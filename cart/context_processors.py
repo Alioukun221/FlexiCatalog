@@ -1,29 +1,11 @@
-from .models import Cart
+from .models import Cart, CartItem
+from .views import get_or_create_cart
 
 def cart_context(request):
-    """Ajouter les infos du panier dans tous les templates"""
-    cart = None
-    cart_total_items = 0
-    cart_total_price = 0
-    
-    if request.user.is_authenticated:
-        try:
-            cart = Cart.objects.get(user=request.user)
-        except Cart.DoesNotExist:
-            pass
-    else:
-        if request.session.session_key:
-            try:
-                cart = Cart.objects.get(session_key=request.session.session_key)
-            except Cart.DoesNotExist:
-                pass
-    
-    if cart:
-        cart_total_items = cart.total_items
-        cart_total_price = cart.total_price
-    
+    """Context processor to add cart information to the context."""
+    cart = get_or_create_cart(request)
+    cart_items = CartItem.objects(cart=cart)
+    total_items = sum(item.quantity for item in cart_items)
     return {
-        'cart': cart,
-        'cart_total_items': cart_total_items,
-        'cart_total_price': cart_total_price
+        'cart_total_items': total_items,
     }

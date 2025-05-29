@@ -1,693 +1,263 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Profil</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profil_user.css' %}">
+{% endblock %}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            min-height: 100vh;
-        }
-
-        .header-section {
-            height: auto;
-            width: 100%;
-        }
-
-        .main-content {
-            padding: 20px 0;
-            min-height: calc(100vh - 200px);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .profile-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: white;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-avatar:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        .profile-avatar svg {
-            width: 60px;
-            height: 60px;
-            opacity: 0.8;
-        }
-
-        .avatar-upload {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: #4CAF50;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 3px solid white;
-        }
-
-        .avatar-upload svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .profile-name {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .profile-status {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-block;
-            font-size: 14px;
-        }
-
-        .profile-body {
-            padding: 40px 30px;
-        }
-
-        .form-section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title svg {
-            width: 20px;
-            height: 20px;
-            color: #667eea;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #fafafa;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .verification-status {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .verification-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .verification-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .verification-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-verified {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-missing {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            padding: 30px 0;
-            border-top: 1px solid #e9ecef;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        /* POPUP DE SUCCÈS */
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .popup-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .popup {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transform: scale(0.7);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .popup-overlay.show .popup {
-            transform: scale(1);
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: bounce 0.6s ease-out 0.2s both;
-        }
-
-        .success-icon::after {
-            content: '✓';
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-        }
-
-        .popup-title {
-            color: #333;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .popup-message {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-
-        .popup-btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .popup-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #999;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .close-btn:hover {
-            color: #333;
-        }
-
-        .footer-section {
-            height: auto;
-            width: 100%;
-        }
-
-        @keyframes bounce {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 10px;
-            }
-
-            .profile-header {
-                padding: 30px 20px;
-            }
-
-            .profile-body {
-                padding: 30px 20px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                justify-content: center;
-            }
-
-            .popup {
-                padding: 30px 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-   
-   
-
-    <div class="main-content">
-        <div class="container">
-            <div class="profile-container">
-                <div class="profile-header">
-                    <div class="profile-avatar" onclick="triggerFileInput()">
+{% block content %}
+<div class="main-content">
+    <div class="container">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar" onclick="triggerFileInput()">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <div class="avatar-upload">
                         <svg fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                         </svg>
-                        <div class="avatar-upload">
-                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    
-                    <!-- <h1 class="profile-name" id="displayName">Jean Dupuis</h1> -->
-                    <div class="profile-status">
-                        <span id="statusText">Profil Actif</span>
                     </div>
                 </div>
+                
+                <!-- <h1 class="profile-name" id="displayName">Jean Dupuis</h1> -->
+                <div class="profile-status">
+                    <span id="statusText">Profil Actif</span>
+                </div>
+            </div>
 
-                <div class="profile-body">
-                    <form method="POST" id="profileForm">
-                         {% csrf_token %}
-                        <input type="file" id="avatarInput" name="photo" accept="image/*" style="display: none;" onchange="handleAvatarUpload(this)">
+            <div class="profile-body">
+                <form method="POST" id="profileForm">
+                     {% csrf_token %}
+                    <input type="file" id="avatarInput" name="photo" accept="image/*" style="display: none;" onchange="handleAvatarUpload(this)">
+                    
+                    <!-- Informations personnelles -->
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.58L19 8l-9 9z"/>
+                            </svg>
+                            Informations personnelles
+                        </h2>
                         
-                        <!-- Informations personnelles -->
-                        <div class="form-section">
-                            <h2 class="section-title">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.58L19 8l-9 9z"/>
-                                </svg>
-                                Informations personnelles
-                            </h2>
-                            
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label" for="username">Username</label>
-                                    <input type="text" id="username" name="username" class="form-input" value="{{ form.username.value }}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="email">Email *</label>
-                                    <input type="email" id="email" name="email" class="form-input" value="{{ form.email.value }}" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="telephone">Téléphone</label>
-                                    <input type="tel" id="telephone" name="telephone" class="form-input" value="{{ form.telephone.value }}">
-                                </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="username">Username</label>
+                                <input type="text" id="username" name="username" class="form-input" value="{{ form.username.value }}">
                             </div>
-                        </div>
-
-                        <!-- Localisation -->
-                        <div class="form-section">
-                            <h2 class="section-title">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                                </svg>
-                                Localisation
-                            </h2>
-                            
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label" for="adresse">Adresse</label>
-                                    <input type="text" id="adresse" name="adresse" class="form-input" value="{{ form.adresse.value }}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="ville">Ville</label>
-                                    <input type="text" id="ville" name="ville" class="form-input" value="{{ form.ville.value }}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="code_postal">Code postal</label>
-                                    <input type="text" id="code_postal" name="code_postal" class="form-input" value="{{ form.code_postal.value }}">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label" for="pays">Pays</label>
-                                    <input type="text" id="pays" name="pays" class="form-input" value="{{ form.pays.value }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Description -->
-                        <!-- <div class="form-section">
-                            <h2 class="section-title">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                                </svg>
-                                À propos
-                            </h2>
                             
                             <div class="form-group">
-                                <label class="form-label" for="bio">Description personnelle</label>
-                                <textarea id="bio" name="bio" class="form-input form-textarea" placeholder="Parlez-nous de vous...">Passionné de technologie et de développement web.</textarea>
+                                <label class="form-label" for="email">Email *</label>
+                                <input type="email" id="email" name="email" class="form-input" value="{{ form.email.value }}" required>
                             </div>
-                        </div> -->
-
-                        <!-- Vérifications -->
-                        <div class="form-section">
-                            <h2 class="section-title">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.68 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5l-4-4 1.41-1.41L13 14.17l6.59-6.58L21 9l-8 8z"/>
-                                </svg>
-                                Vérifications
-                            </h2>
                             
-                            <div class="verification-status">
-                                <div class="verification-item">
-                                    <div class="verification-label">
-                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                                        </svg>
-                                        Email
-                                    </div>
-                                    <span class="status-badge status-verified">Vérifié</span>
-                                </div>
-                                
-                                <div class="verification-item">
-                                    <div class="verification-label">
-                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                                        </svg>
-                                        Téléphone
-                                    </div>
-                                    <span class="status-badge status-pending">En attente</span>
-                                </div>
-                                
-                                <div class="verification-item">
-                                    <div class="verification-label">
-                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                                        </svg>
-                                        Pièce d'identité
-                                    </div>
-                                    <span class="status-badge status-missing">Non fournie</span>
-                                </div>
+                            <div class="form-group">
+                                <label class="form-label" for="telephone">Téléphone</label>
+                                <input type="tel" id="telephone" name="telephone" class="form-input" value="{{ form.telephone.value }}">
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Boutons d'action -->
-                        <div class="action-buttons">
-                            <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                                </svg>
-                                Annuler
-                            </button>
-                            <button type="submit" class="btn btn-primary" id="saveBtn" onclick="showSuccessPopup()">
-                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
-                                </svg>
-                                Sauvegarder
-                            </button>
+                    <!-- Localisation -->
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            Localisation
+                        </h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="adresse">Adresse</label>
+                                <input type="text" id="adresse" name="adresse" class="form-input" value="{{ form.adresse.value }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="ville">Ville</label>
+                                <input type="text" id="ville" name="ville" class="form-input" value="{{ form.ville.value }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="code_postal">Code postal</label>
+                                <input type="text" id="code_postal" name="code_postal" class="form-input" value="{{ form.code_postal.value }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="pays">Pays</label>
+                                <input type="text" id="pays" name="pays" class="form-input" value="{{ form.pays.value }}">
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Description -->
+                    <!-- <div class="form-section">
+                        <h2 class="section-title">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                            </svg>
+                            À propos
+                        </h2>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="bio">Description personnelle</label>
+                            <textarea id="bio" name="bio" class="form-input form-textarea" placeholder="Parlez-nous de vous...">Passionné de technologie et de développement web.</textarea>
+                        </div>
+                    </div> -->
+
+                    <!-- Vérifications -->
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.68 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5l-4-4 1.41-1.41L13 14.17l6.59-6.58L21 9l-8 8z"/>
+                            </svg>
+                            Vérifications
+                        </h2>
+                        
+                        <div class="verification-status">
+                            <div class="verification-item">
+                                <div class="verification-label">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                    </svg>
+                                    Email
+                                </div>
+                                <span class="status-badge status-verified">Vérifié</span>
+                            </div>
+                            
+                            <div class="verification-item">
+                                <div class="verification-label">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                    </svg>
+                                    Téléphone
+                                </div>
+                                <span class="status-badge status-pending">En attente</span>
+                            </div>
+                            
+                            <div class="verification-item">
+                                <div class="verification-label">
+                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                                    </svg>
+                                    Pièce d'identité
+                                </div>
+                                <span class="status-badge status-missing">Non fournie</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                            </svg>
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn" onclick="showSuccessPopup()">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                            </svg>
+                            Sauvegarder
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Popup de succès -->
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup">
-            <button class="close-btn" onclick="hideSuccessPopup()">&times;</button>
-            <div class="success-icon"></div>
-            <h3 class="popup-title">Succès !</h3>
-            <p class="popup-message">Votre profil a été modifié avec succès.</p>
-            <button class="popup-btn" onclick="hideSuccessPopup()" href="{% url 'dashboard' %}">Parfait</button>
-        </div>
+<!-- Popup de succès -->
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+        <button class="close-btn" onclick="hideSuccessPopup()">&times;</button>
+        <div class="success-icon"></div>
+        <h3 class="popup-title">Succès !</h3>
+        <p class="popup-message">Votre profil a été modifié avec succès.</p>
+        <button class="popup-btn" onclick="hideSuccessPopup()" href="{% url 'dashboard' %}">Parfait</button>
     </div>
+</div>
 
-    
 
-    <script>
-        // Initialisation au chargement de la page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ajouter les classes CSS aux champs du formulaire Django
-            styleFormFields();
-        });
+<script>
+    // Initialisation au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ajouter les classes CSS aux champs du formulaire Django
+        styleFormFields();
+    });
 
-        // Appliquer les styles aux champs du formulaire
-        function styleFormFields() {
-            const formFields = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
-            formFields.forEach(field => {
-                field.classList.add('form-input');
-                if (field.tagName.toLowerCase() === 'textarea') {
-                    field.classList.add('form-textarea');
-                }
-            });
-        }
-
-        // Gérer l'upload d'avatar
-        function triggerFileInput() {
-            document.getElementById('avatarInput').click();
-        }
-
-        function handleAvatarUpload(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const avatar = document.querySelector('.profile-avatar');
-                    avatar.innerHTML = `
-                        <img src="${e.target.result}" alt="Photo de profil">
-                        <div class="avatar-upload">
-                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                            </svg>
-                        </div>
-                    `;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // Réinitialiser le formulaire
-        function resetForm() {
-            if (confirm('Êtes-vous sûr de vouloir annuler vos modifications ?')) {
-                location.reload();
-            }
-        }
-
-        // Afficher le popup de succès
-        function showSuccessPopup() {
-            const overlay = document.getElementById('popupOverlay');
-            overlay.classList.add('show');
-            
-            // Fermer automatiquement après 3 secondes
-            setTimeout(() => {
-                hideSuccessPopup();
-            }, 3000);
-        }
-
-        // Fermer le popup de succès
-        function hideSuccessPopup() {
-            const overlay = document.getElementById('popupOverlay');
-            overlay.classList.remove('show');
-        }
-
-        // Fermer le popup en cliquant sur l'overlay
-        document.getElementById('popupOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideSuccessPopup();
+    // Appliquer les styles aux champs du formulaire
+    function styleFormFields() {
+        const formFields = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
+        formFields.forEach(field => {
+            field.classList.add('form-input');
+            if (field.tagName.toLowerCase() === 'textarea') {
+                field.classList.add('form-textarea');
             }
         });
+    }
 
-        // Fermer le popup avec la touche Escape
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                hideSuccessPopup();
-            }
-        });
-    </script>
-</body>
-</html>
+    // Gérer l'upload d'avatar
+    function triggerFileInput() {
+        document.getElementById('avatarInput').click();
+    }
+
+    function handleAvatarUpload(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatar = document.querySelector('.profile-avatar');
+                avatar.innerHTML = `
+                    <img src="${e.target.result}" alt="Photo de profil">
+                    <div class="avatar-upload">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Réinitialiser le formulaire
+    function resetForm() {
+        if (confirm('Êtes-vous sûr de vouloir annuler vos modifications ?')) {
+            location.reload();
+        }
+    }
+
+    // Afficher le popup de succès
+    function showSuccessPopup() {
+        const overlay = document.getElementById('popupOverlay');
+        overlay.classList.add('show');
+        
+        // Fermer automatiquement après 3 secondes
+        setTimeout(() => {
+            hideSuccessPopup();
+        }, 3000);
+    }
+
+    // Fermer le popup de succès
+    function hideSuccessPopup() {
+        const overlay = document.getElementById('popupOverlay');
+        overlay.classList.remove('show');
+    }
+
+    // Fermer le popup en cliquant sur l'overlay
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideSuccessPopup();
+        }
+    });
+
+    // Fermer le popup avec la touche Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideSuccessPopup();
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,359 +1,340 @@
-/* Variables globales */
-:root {
-  --primary-color: #3d5af1;
-  --secondary-color: #22d3ee;
-  --gradient-start: #3d5af1;
-  --gradient-end: #22d3ee;
-  --dark-color: #1e293b;
-  --light-color: #f8fafc;
-  --danger-color: #ef4444;
-  --success-color: #10b981;
-  --text-color: #334155;
-  --light-text: #64748b;
-  --border-radius: 12px;
-  --input-radius: 8px;
-  --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
-}
-
-/* Reset et styles de base */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f5ff;
-  background-image: linear-gradient(135deg, #f0f5ff 0%, #f5f7fa 100%);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
 }
 
-/* Container principal */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  padding: 20px;
+.modal-container {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 1000px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    position: relative;
+    height: 600px;
 }
 
-/* Carte de connexion */
-.card {
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  overflow: hidden;
+.close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    z-index: 10;
 }
 
-.card-content {
-  display: flex;
-  min-height: 600px;
+.illustration-container {
+    flex: 1.2;
+    background-color: #cce9fd;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 600px;
 }
 
-/* Côté gauche - Illustration */
-.left-side {
-  flex: 1;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f0fdff 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  position: relative;
-  overflow: hidden;
+.illustration-container::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(135deg, #65b8ff 0%, #3b96ff 100%);
+    transform: rotate(-5deg);
+    z-index: 1;
 }
 
-.left-side::before {
-  content: '';
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: rgba(61, 90, 241, 0.1);
+.illustration-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: white;
 }
 
-.left-side::after {
-  content: '';
-  position: absolute;
-  bottom: -30px;
-  left: -30px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(34, 211, 238, 0.1);
+.illustration-svg {
+    width: 80%;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
 }
 
-.illustration img {
-  max-width: 100%;
-  height: auto;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 10px 15px rgba(61, 90, 241, 0.2));
+.illustration-text {
+    text-align: center;
 }
 
-/* Côté droit - Formulaire */
-.right-side {
-  flex: 1;
-  padding: 50px;
-  display: flex;
-  flex-direction: column;
+.illustration-text h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 600;
 }
 
-/* Logo */
+.illustration-text p {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.form-side {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
 .logo {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
+    width: 40px;
+    height: 40px;
+    background-color: #60a5fa;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 18px;
 }
 
-.logo-circle {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-  box-shadow: 0 4px 10px rgba(61, 90, 241, 0.3);
+.brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: #111;
 }
 
-.logo-circle span {
-  color: white;
-  font-weight: bold;
-  font-size: 22px;
-}
-
-.logo h3 {
-  color: var(--dark-color);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-}
-
-/* Formulaire */
 .form-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.form-container h1 {
-  font-size: 28px;
-  margin-bottom: 35px;
-  color: var(--dark-color);
-  font-weight: 700;
-  letter-spacing: -0.5px;
+h1 {
+    font-size: 30px;
+    margin-bottom: 30px;
+    color: #111;
+    font-weight: 600;
 }
 
 .form-group {
-  margin-bottom: 24px;
+    margin-bottom: 20px;
+    position: relative;
 }
 
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: var(--input-radius);
-  font-size: 16px;
-  transition: var(--transition);
-  background-color: #fafbff;
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus {
-  border-color: var(--primary-color);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.15);
-  background-color: white;
+input {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f9fafb;
 }
 
-input[type="text"]::placeholder,
-input[type="password"]::placeholder {
-  color: #a3aec2;
+input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    background-color: #fff;
+}
+
+input::placeholder {
+    color: #9ca3af;
 }
 
 .forgot-password {
-  text-align: right;
-  margin-top: -5px;
+    text-align: right;
+    margin: -5px 0 20px;
 }
 
 .forgot-password a {
-  color: var(--light-text);
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
 
 .forgot-password a:hover {
-  color: var(--primary-color);
+    color: #3b82f6;
+    text-decoration: underline;
 }
 
-.btn-primary {
-  width: 100%;
-  background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-  color: white;
-  border: none;
-  padding: 16px;
-  border-radius: var(--input-radius);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 5px 15px rgba(61, 90, 241, 0.25);
+.error-message {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 5px;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 18px rgba(61, 90, 241, 0.35);
+.password-field {
+    position: relative;
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(61, 90, 241, 0.2);
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 55%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #60a5fa;
+    font-size: 18px;
 }
 
-/* Pied de formulaire */
-.form-footer {
-  margin-top: 35px;
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
+.form-actions {
+    margin-top: auto;
+    padding-top: 10px;
 }
 
-.alternative-login {
-  text-align: center;
-  font-size: 15px;
-  color: var(--light-text);
+.login-button {
+    width: 100%;
+    padding: 16px;
+    background-color: #60a5fa;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(96, 165, 250, 0.2);
+    letter-spacing: 0.5px;
 }
 
-.alternative-login a {
-  color: var(--primary-color);
-  font-weight: 600;
-  text-decoration: none;
-  transition: var(--transition);
+.login-button:hover {
+    background-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(59, 130, 246, 0.3);
 }
 
-.alternative-login a:hover {
-  text-decoration: underline;
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+.remember-me input {
+    width: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    accent-color: #60a5fa;
 }
 
 .social-login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 30px;
 }
 
-.social-btn {
-  color: var(--light-text);
-  text-decoration: none;
-  font-size: 14px;
-  transition: var(--transition);
-  font-weight: 500;
+.social-login a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
 
-.social-btn:hover {
-  color: var(--primary-color);
+.social-login a:hover {
+    color: #3b82f6;
 }
 
-.facebook:hover {
-  color: #1877f2;
+.social-divider {
+    color: #ccc;
 }
 
-.linkedin:hover {
-  color: #0077b5;
+.register-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
 }
 
-.google:hover {
-  color: #ea4335;
+.register-link a {
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 500;
 }
 
-.separator {
-  color: #e2e8f0;
+.register-link a:hover {
+    text-decoration: underline;
 }
 
-/* Messages d'erreur/succès */
+/* Messages flash */
 .messages {
-  margin-bottom: 25px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    list-style-type: none;
 }
 
-.message {
-  padding: 12px 16px;
-  border-radius: var(--input-radius);
-  margin-bottom: 12px;
-  font-size: 14px;
+.messages .success {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }
 
-.error {
-  background-color: rgba(239, 68, 68, 0.08);
-  color: var(--danger-color);
-  border-left: 4px solid var(--danger-color);
+.messages .error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
 }
 
-.success {
-  background-color: rgba(16, 185, 129, 0.08);
-  color: var(--success-color);
-  border-left: 4px solid var(--success-color);
-}
+@media (max-width: 900px) {
+    .modal-container {
+        flex-direction: column;
+        height: auto;
+    }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .card-content {
-    flex-direction: column;
-  }
-  
-  .left-side {
-    display: none;
-  }
-  
-  .right-side {
-    padding: 40px;
-  }
-}
+    .illustration-container {
+        display: none;
+    }
 
-@media (max-width: 576px) {
-  .container {
-    padding: 15px;
-  }
-  
-  .right-side {
-    padding: 25px;
-  }
-  
-  .form-container h1 {
-    font-size: 24px;
-    margin-bottom: 25px;
-  }
-  
-  input[type="text"],
-  input[type="password"] {
-    padding: 14px;
-  }
-  
-  .btn-primary {
-    padding: 14px;
-  }
-  
-  .logo-circle {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .logo-circle span {
-    font-size: 18px;
-  }
-  
-  .logo h3 {
-    font-size: 18px;
-  }
+    .form-side {
+        padding: 30px 20px;
+    }
 }

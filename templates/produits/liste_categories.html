@@ -17,7 +17,7 @@
 
     <div class="categories-grid">
         {% for category in categories %}
-        <a href="{% url 'detail_categorie' category.slug %}" style="text-decoration: none;">
+        <a href="{% url 'products:detail_categorie' category.slug %}" style="text-decoration: none;">
             <div class="category-card">
                 {% if category.image_url %}
                 <img src="{{ category.image_url }}" alt="{{ category.nom }}" class="category-image">

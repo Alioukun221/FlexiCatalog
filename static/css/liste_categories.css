@@ -1,45 +1,48 @@
+/* styles for liste_categories.html */
+
 .categories-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
+    padding: 40px 0;
+    background-color: #f8f9fa;
 }
 
 .categories-header {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .categories-header h1 {
-    font-size: 2.5em;
-    color: #333;
-    margin-bottom: 15px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+    /* Primary blue color */
 }
 
 .categories-header p {
-    font-size: 1.1em;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto;
+    font-size: 1.2rem;
+    color: #6c757d;
 }
 
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 20px 0;
+    gap: 20px;
+    padding: 0 20px;
+    max-width: 1200px;
+    /* Set a max-width for the container */
+    margin: 0 auto;
+    /* Center the container */
 }
 
 .category-card {
-    background: #fff;
+    background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 }
 
 .category-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
 .category-image {
@@ -53,34 +56,21 @@
 }
 
 .category-title {
-    font-size: 1.4em;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
     font-weight: 600;
+    color: #007bff;
+    /* Primary blue color */
 }
 
 .category-description {
-    color: #666;
-    font-size: 0.95em;
-    line-height: 1.5;
-    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #6c757d;
 }
 
 .empty-state {
     text-align: center;
-    padding: 50px 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    margin: 20px 0;
-}
-
-.empty-state h3 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.empty-state p {
-    color: #666;
+    padding: 40px;
+    color: #6c757d;
 }
 
 @media (max-width: 768px) {
@@ -92,4 +82,18 @@
     .categories-header h1 {
         font-size: 2em;
     }
+}
+
+.btn-light {
+    background-color: #007bff;
+    /* Primary blue color */
+    color: #ffffff;
+    /* White text */
+    border: none;
+}
+
+.btn-light:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    color: #ffffff;
 }
