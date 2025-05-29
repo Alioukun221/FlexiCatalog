@@ -204,6 +204,36 @@ class ClientProfileUpdateForm(forms.Form):
         max_length=50,
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
+    adresse = forms.CharField(
+        label="adresse", 
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    telephone = forms.CharField(
+        label="telephone", 
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    ville = forms.CharField(
+        label="ville", 
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    code_postal= forms.CharField(
+        label="code_postal", 
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    pays= forms.CharField(
+        label="pays", 
+        max_length=50,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
     email = forms.EmailField(
         label="Adresse email",
         widget=forms.EmailInput(attrs={'class': 'form-control'})
@@ -215,6 +245,11 @@ class ClientProfileUpdateForm(forms.Form):
         
         if client:
             self.fields['username'].initial = client.username
+            self.fields['telephone'].initial = client.telephone
+            self.fields['adresse'].initial = client.adresse
+            self.fields['ville'].initial = client.ville
+            self.fields['code_postal'].initial = client.code_postal
+            self.fields['pays'].initial = client.pays
             self.fields['email'].initial = client.email
     
     def clean_username(self):
@@ -231,6 +266,11 @@ class ClientProfileUpdateForm(forms.Form):
     
     def save(self):
         self.client.username = self.cleaned_data.get('username')
+        self.client.telephone= self.cleaned_data.get('telephone')
+        self.client.adresse= self.cleaned_data.get('adresse')
+        self.client.ville= self.cleaned_data.get('ville')
+        self.client.code_postal= self.cleaned_data.get('code_postal')
+        self.client.pays= self.cleaned_data.get('pays')
         self.client.email = self.cleaned_data.get('email')
         self.client.save()
         

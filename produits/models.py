@@ -1,12 +1,14 @@
 from mongoengine import (
     Document, StringField, FloatField, IntField, DateTimeField,
-    ListField, ReferenceField, EmbeddedDocument, EmbeddedDocumentField, ImageField, DictField, DynamicField
+    ListField, ReferenceField, EmbeddedDocument, EmbeddedDocumentField, ImageField, DictField, DynamicField, BooleanField
 )
 from datetime import datetime
 import os
 from mongoengine.errors import ValidationError
 from slugify import slugify
 import uuid
+from django.db import models
+
 
 # Définition des catégories et leurs champs spécifiques
 CATEGORIES = {
@@ -185,9 +187,12 @@ class Produit(Document):
     # commentaires = ListField(EmbeddedDocumentField('Commentaire'))
     date_creation = DateTimeField(default=datetime.utcnow)
     date_modification = DateTimeField(default=datetime.utcnow)
+    is_active = BooleanField(default=True)
 
     # Champs dynamiques selon la catégorie
     caracteristiques = DictField()
+    image = models.ImageField(upload_to='produits_images/', blank=True, null=True)
+
 
     meta = {
         'collection': 'produits',

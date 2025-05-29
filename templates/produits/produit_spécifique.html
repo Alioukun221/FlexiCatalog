@@ -1,10 +1,68 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}{{ produit.nom }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/produit_spécifique.css' %}">
+<style>
+    /* Styles pour les animations et notifications */
+    .cart-animate {
+        animation: cartBounce 0.5s;
+    }
+    
+    @keyframes cartBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    
+    .toast-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .toast-message.show {
+        opacity: 1;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    /* Style pour le sélecteur de quantité */
+    .quantity-selector {
+        margin-bottom: 1rem;
+    }
+    
+    .quantity-selector .btn {
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .quantity-selector input {
+        width: 60px;
+        text-align: center;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -64,15 +122,33 @@
                 <div class="stock-status out-of-stock">Rupture de stock</div>
                 {% endif %}
 
-              
                 {% if produit.stock > 0 %}
-                <form method="post" action="" class="w-100">
+                <form method="post" action="{% url 'cart:add_to_cart' produit.slug %}" class="w-100" id="add-to-cart-form">
                     {% csrf_token %}
-                    <button type="submit" class="add-to-cart-btn">Ajouter au panier</button>
+                    
+                    <div class="quantity-selector mb-3">
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="qty-decrease">-</button>
+                            <input type="number" 
+                                   id="quantity" 
+                                   name="quantity" 
+                                   class="form-control mx-2" 
+                                   value="1" 
+                                   min="1" 
+                                   max="{{ produit.stock }}">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="qty-increase">+</button>
+                        </div>
+                        <small class="text-muted">Stock disponible: {{ produit.stock }}</small>
+                    </div>
+                    
+                    <button type="submit" class="add-to-cart-btn" id="add-to-cart-btn">
+                        <i class="fas fa-shopping-cart me-2"></i> Ajouter au panier
+                    </button>
                 </form>
                 {% else %}
                 <button disabled class="add-to-cart-btn">Indisponible</button>
                 {% endif %}
+
                 <div class="reassurance-bar">
                     <div class="reassurance-item">
                         <span class="reassurance-icon">
@@ -104,10 +180,10 @@
                         </span>
                         Livraison rapide
                     </div>
-
                 </div>
             </div>
         </div>
+
         <div class="product-extra-info">
             {% if produit.categorie == 'Smartphones' %}
             <div class="extra-block">
@@ -118,7 +194,6 @@
                 <details>
                     <summary>Info sur le processeur</summary>{{produit.caracteristiques.processeur}}
                 </details>
-
             </div>
             
             <div class="extra-block">
@@ -130,8 +205,9 @@
                     <summary>Info sur la connectivité</summary>{{produit.caracteristiques.connectivite}}
                 </details>
             </div>
+            
             <div class="extra-block">
-                <h3>Système et Batterie </h3>
+                <h3>Système et Batterie</h3>
                 <details>
                     <summary>Info sur le système</summary>{{produit.caracteristiques.systeme}}
                 </details>
@@ -147,8 +223,8 @@
                 <details>
                     <summary>Résistance à l'eau</summary>{{produit.caracteristiques.resistance_eau}}
                 </details>
-
             </div>
+            
             {% elif produit.categorie == 'Ordinateurs' %}
             <div class="extra-block">
                 <h3>Ecran et Processeur</h3>
@@ -162,6 +238,7 @@
                     <summary>Info sur la carte graphique</summary>{{produit.caracteristiques.carte_graphique}}
                 </details>
             </div>
+            
             <div class="extra-block">
                 <h3>Stockage et Mémoire</h3>
                 <details>
@@ -171,6 +248,7 @@
                     <summary>Info sur la RAM</summary>{{produit.caracteristiques.ram}}
                 </details>
             </div>
+            
             <div class="extra-block">
                 <h3>Connectivité et Autres</h3>
                 <details>
@@ -261,6 +339,7 @@
 
             {% endif %}
         </div>
+
         <div class="reviews-section">
             <div class="reviews-header">
                 <h2>Avis clients</h2>
@@ -275,6 +354,7 @@
                     </select>
                 </div>
             </div>
+            
             <div class="review-list">
                 <div class="review-item">
                     <div class="review-avatar">AB</div>
@@ -293,11 +373,12 @@
                 </div>
             </div>
         </div>
+
         <div class="similar-section">
             <h3>Produits similaires</h3>
             <div class="similar-products-grid">
                 {% for produit in produits_similaires %}
-                <a href="{% url 'produit_spécifique' produit.slug %}">
+                <a href="{% url 'products:produit_spécifique' produit.slug %}">
                     <div class="mini-product-card">
                         <div class="mini-product-img">
                             <img src="{{ produit.image_url }}" alt="{{ produit.nom }}">
@@ -313,4 +394,102 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour afficher les notifications
+    function showMessage(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-message alert-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Afficher la notification
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // Cacher après 3 secondes
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Gestion du formulaire d'ajout au panier
+    const addToCartForm = document.getElementById('add-to-cart-form');
+    if (addToCartForm) {
+        const qtyInput = document.getElementById('quantity');
+        const qtyDecrease = document.getElementById('qty-decrease');
+        const qtyIncrease = document.getElementById('qty-increase');
+        const maxStock = parseInt(qtyInput.getAttribute('max'));
+
+        // Gestion des boutons de quantité
+        qtyDecrease.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            if (currentValue > 1) {
+                qtyInput.value = currentValue - 1;
+            }
+        });
+
+        qtyIncrease.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            if (currentValue < maxStock) {
+                qtyInput.value = currentValue + 1;
+            }
+        });
+
+        // Soumission du formulaire
+        addToCartForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const quantity = parseInt(qtyInput.value);
+            
+            if (quantity > maxStock) {
+                showMessage(`Stock insuffisant. Maximum disponible: ${maxStock}`, 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `quantity=${quantity}`
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Erreur serveur');
+                }
+
+                if (data.success) {
+                    // Mise à jour du compteur du panier
+                    const cartCounter = document.querySelector('.cart-counter');
+                    if (cartCounter) {
+                        cartCounter.textContent = data.cart_total_items;
+                    }
+                    
+                    // Animation de l'icône panier
+                    const cartIcon = document.querySelector('.fa-shopping-cart');
+                    if (cartIcon) {
+                        cartIcon.classList.add('cart-animate');
+                        setTimeout(() => {
+                            cartIcon.classList.remove('cart-animate');
+                        }, 500);
+                    }
+                    
+                    showMessage(data.message);
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Une erreur est survenue: ' + error.message, 'error');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
