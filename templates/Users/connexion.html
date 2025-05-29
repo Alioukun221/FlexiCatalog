@@ -414,13 +414,13 @@
             <div class="form-container">
                 <h1>Se connecter</h1>
                 
-                {% if messages %}
+              <!--   {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
                     <li class="{{ message.tags }}">{{ message }}</li>
                     {% endfor %}
                 </ul>
-                {% endif %}
+                {% endif %} -->
                 
                 <form method="POST" action="{% url 'login' %}">
                     {% csrf_token %}

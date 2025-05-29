@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block extra_css %}
+<style>
+.cart-page {
+    min-height: 70vh;
+    padding: 2rem 0;
+}
+.cart-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+}
+.cart-item-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.quantity-input {
+    width: 70px;
+    text-align: center;
+}
+.cart-summary {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    position: sticky;
+    top: 20px;
+}
+.btn-quantity {
+    width: 35px;
+    height: 35px;
+    border: 1px solid #ddd;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-quantity:hover {
+    background: #f8f9fa;
+}
+.empty-cart {
+    text-align: center;
+    padding: 3rem 0;
+}
+.empty-cart img {
+    width: 200px;
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+/* **Diminution taille bouton découvrir nos produits** */
+.empty-cart .btn-primary {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-page">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Mon Panier</h1>
+            </div>
+        </div>
+
+        {% if cart_items %}
+        <div class="row">
+            <div class="col-lg-8">
+                {% for item in cart_items %}
+                <div class="cart-item" data-item-id="{{ item.id }}">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img src="{% if item.product.image_url %}{{ item.product.image_url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" 
+                                 alt="{{ item.product.nom }}" class="cart-item-image">
+                        </div>
+                        <div class="col-md-4">
+                            <h5>{{ item.product.nom }}</h5>
+                            <p class="text-muted mb-1">{{ item.product.categorie.nom }}</p>
+                            <p class="text-success mb-0">
+                                {% if item.product.stock > 0 %}
+                                    En stock ({{ item.product.stock }} disponibles)
+                                {% else %}
+                                    <span class="text-danger">Rupture de stock</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="d-flex align-items-center">
+                                <button class="btn-quantity btn-decrease" data-item-id="{{ item.id }}">-</button>
+                                <input type="number" 
+                                       class="form-control quantity-input mx-1" 
+                                       value="{{ item.quantity }}" 
+                                       min="1" 
+                                       max="{{ item.product.stock }}"
+                                       data-item-id="{{ item.id }}">
+                                <button class="btn-quantity btn-increase" data-item-id="{{ item.id }}">+</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <strong class="item-total-price">{{ item.total_price }} FCFA</strong>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button class="btn btn-outline-danger btn-sm remove-item" data-item-id="{{ item.id }}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'products:liste_produits' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Continuer mes achats
+                    </a>
+                    <button class="btn btn-outline-secondary" id="clear-cart">
+                        <i class="fas fa-trash"></i> Vider le panier
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h4>Résumé de la commande</h4>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Sous-total ({{ cart.total_items }} article{{ cart.total_items|pluralize }})</span>
+                        <span id="cart-subtotal">{{ cart.total_price }} FCFA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Livraison</span>
+                        <span class="text-success">Gratuite</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total</strong>
+                        <strong id="cart-total">{{ cart.total_price }} FCFA</strong>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 mb-3" id="checkout-btn">
+                        Passer la commande
+                    </button>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-lock"></i> Paiement 100% sécurisé
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-cart">
+            <img src="{% static 'img/empty-cart.png' %}" alt="Panier vide">
+            <h3>Votre panier est vide</h3>
+            <p class="text-muted">Découvrez nos produits et ajoutez-les à votre panier</p>
+            <a href="{% url 'accueil' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-store"></i> Découvrir nos produits
+            </a>            
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Fonction utilitaire pour récupérer le CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+    
+        // Boutons de diminution de quantité
+        document.querySelectorAll('.btn-decrease').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const itemId = btn.dataset.itemId;
+                const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+                if (!input) return;
+    
+                let quantity = parseInt(input.value);
+                if (quantity > 1) {
+                    updateQuantity(itemId, quantity - 1);
+                }
+            });
+        });
+    
+        // Boutons d’augmentation de quantité
+        document.querySelectorAll('.btn-increase').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const itemId = btn.dataset.itemId;
+                const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+                if (!input) return;
+    
+                let quantity = parseInt(input.value);
+                const maxStock = parseInt(input.getAttribute('max'));
+                if (quantity < maxStock) {
+                    updateQuantity(itemId, quantity + 1);
+                }
+            });
+        });
+    
+        // Modification manuelle de la quantité
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const itemId = input.dataset.itemId;
+                let quantity = parseInt(input.value);
+                const maxStock = parseInt(input.getAttribute('max'));
+    
+                if (isNaN(quantity) || quantity < 1) {
+                    input.value = 1;
+                    return;
+                }
+    
+                if (quantity > maxStock) {
+                    alert(`Stock insuffisant. Maximum: ${maxStock}`);
+                    input.value = maxStock;
+                    return;
+                }
+    
+                updateQuantity(itemId, quantity);
+            });
+        });
+    
+        // Suppression d’un article
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const itemId = btn.dataset.itemId;
+                if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+                    removeItem(itemId);
+                }
+            });
+        });
+    
+        // Vider le panier
+        const clearCartBtn = document.getElementById('clear-cart');
+        if (clearCartBtn) {
+            clearCartBtn.addEventListener('click', () => {
+                if (confirm('Êtes-vous sûr de vouloir vider votre panier ?')) {
+                    clearCart();
+                }
+            });
+        }
+    
+        // Fonction pour mettre à jour la quantité d’un article
+        function updateQuantity(itemId, quantity) {
+            fetch(`/cart/update/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `quantity=${quantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const input = document.querySelector(`input[data-item-id="${itemId}"]`);
+                    if (input) input.value = data.quantity;
+                    const priceElem = document.querySelector(`.cart-item[data-item-id="${itemId}"] .item-total-price`);
+                    if (priceElem) priceElem.textContent = data.item_total_price + ' FCFA';
+                    document.getElementById('cart-subtotal').textContent = data.cart_total_price + ' FCFA';
+                    document.getElementById('cart-total').textContent = data.cart_total_price + ' FCFA';
+                } else {
+                    alert(data.error || 'Erreur lors de la mise à jour');
+                }
+            })
+            .catch(() => alert('Erreur réseau lors de la mise à jour'));
+        }
+    
+        // Fonction pour supprimer un article
+        function removeItem(itemId) {
+            fetch(`/cart/remove/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const itemElem = document.querySelector(`.cart-item[data-item-id="${itemId}"]`);
+                    if (itemElem) itemElem.remove();
+                    document.getElementById('cart-subtotal').textContent = data.cart_total_price + ' FCFA';
+                    document.getElementById('cart-total').textContent = data.cart_total_price + ' FCFA';
+
+                    // Si plus aucun article, recharger la page pour afficher panier vide
+                    if (data.cart_total_items === 0) {
+                        window.location.reload();
+                    }
+                } else {
+                    alert(data.error || 'Erreur lors de la suppression');
+                }
+            })
+            .catch(() => alert('Erreur réseau lors de la suppression'));
+        }
+    
+        // Fonction pour vider le panier
+        function clearCart() {
+            fetch(`/cart/clear/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Erreur lors du vidage du panier');
+                }
+            })
+            .catch(() => alert('Erreur réseau lors du vidage'));
+        }
+    });
+</script>
+{% endblock %}

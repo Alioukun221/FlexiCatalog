@@ -1,0 +1,40 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/liste.css' %}">
+
+<form method="get" action="{% url 'liste_produits' %}">
+    <input type="text" name="q" placeholder="Recherche..." value="{{ params.q|default:'' }}" />
+  
+    <select name="categorie">
+      <option value="">Toutes catégories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if params.categorie == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  
+    <input type="text" name="marque" placeholder="Marque" value="{{ params.marque|default:'' }}" />
+  
+    <input type="number" name="prix_min" placeholder="Prix min" value="{{ params.prix_min|default:'' }}" />
+    <input type="number" name="prix_max" placeholder="Prix max" value="{{ params.prix_max|default:'' }}" />
+  
+    <!-- Exemple de champ dynamique selon catégorie : Ram pour Smartphones -->
+    {% if params.categorie == 'Smartphones' %}
+      <input type="text" name="ram" placeholder="RAM" value="{{ params.ram|default:'' }}" />
+    {% endif %}
+  
+    <button type="submit">Filtrer</button>
+  </form>
+
+  <h2>Résultats de la recherche</h2>
+<ul>
+  {% for produit in produits %}
+    <li>
+      <strong>{{ produit.nom }}</strong> - {{ produit.marque }} - {{ produit.prix }} € <br />
+      Catégorie : {{ produit.categorie }} <br />
+      Description : {{ produit.description|truncatewords:20 }}
+    </li>
+  {% empty %}
+    <li>Aucun produit ne correspond aux critères.</li>
+  {% endfor %}
+</ul>
+  
