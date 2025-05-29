@@ -1,0 +1,55 @@
+/* styles for footer.html */
+
+footer {
+    background-color: #343a40;
+    /* Dark grey background */
+    color: #ffffff;
+    /* White text color */
+    padding: 40px 0;
+    /* Add some padding */
+}
+
+footer h5 {
+    margin-bottom: 15px;
+    color: #ffffff;
+    /* White color for headings */
+}
+
+footer p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+footer ul {
+    padding: 0;
+    list-style: none;
+}
+
+footer ul li {
+    margin-bottom: 10px;
+}
+
+footer ul li a {
+    color: #ffffff;
+    /* White text for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer ul li a:hover {
+    color: #007bff;
+    /* Primary color on hover */
+}
+
+footer .social-links a {
+    color: #ffffff;
+    /* White text for social links */
+    margin-right: 15px;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+footer .social-links a:hover {
+    color: #007bff;
+    /* Primary color on hover */
+}

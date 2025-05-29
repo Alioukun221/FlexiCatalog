@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Commande Confirmée{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card text-center shadow-sm">
+                <div class="card-body p-4">
+                    <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+                    <h1 class="card-title text-success">Commande Passée avec Succès!</h1>
+                    <p class="card-text">Merci pour votre commande. Votre paiement a été confirmé et votre commande est
+                        en cours de traitement.</p>
+                    <hr>
+                    <p class="mb-4">Vous recevrez un email de confirmation avec les détails de votre commande sous peu.
+                    </p>
+                    <a href="{% url 'accueil' %}" class="btn btn-primary me-2">
+                        <i class="fas fa-home"></i> Retour à l'accueil
+                    </a>
+                    <a href="{% url 'products:liste_produits' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-box"></i> Continuer vos achats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

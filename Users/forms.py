@@ -243,6 +243,7 @@ class ClientProfileUpdateForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.client = client
         
+        # Re-added pre-filling logic
         if client:
             self.fields['username'].initial = client.username
             self.fields['telephone'].initial = client.telephone
@@ -254,24 +255,35 @@ class ClientProfileUpdateForm(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        if username != self.client.username and Client.objects(username=username):
+        # Keep the uniqueness check, but only if a username is provided
+        if username and self.client and username != self.client.username and Client.objects(username=username):
             raise forms.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
         return username
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email != self.client.email and Client.objects(email=email):
+        # Keep the uniqueness check, but only if an email is provided
+        if email and self.client and email != self.client.email and Client.objects(email=email):
             raise forms.ValidationError("Cette adresse email est déjà utilisée.")
         return email
     
     def save(self):
-        self.client.username = self.cleaned_data.get('username')
-        self.client.telephone= self.cleaned_data.get('telephone')
-        self.client.adresse= self.cleaned_data.get('adresse')
-        self.client.ville= self.cleaned_data.get('ville')
-        self.client.code_postal= self.cleaned_data.get('code_postal')
-        self.client.pays= self.cleaned_data.get('pays')
-        self.client.email = self.cleaned_data.get('email')
+        # Update only the fields that are in the form's cleaned_data
+        if 'username' in self.cleaned_data:
+            self.client.username = self.cleaned_data['username']
+        if 'telephone' in self.cleaned_data:
+            self.client.telephone= self.cleaned_data['telephone']
+        if 'adresse' in self.cleaned_data:
+            self.client.adresse= self.cleaned_data['adresse']
+        if 'ville' in self.cleaned_data:
+            self.client.ville= self.cleaned_data['ville']
+        if 'code_postal' in self.cleaned_data:
+            self.client.code_postal= self.cleaned_data['code_postal']
+        if 'pays' in self.cleaned_data:
+            self.client.pays= self.cleaned_data['pays']
+        if 'email' in self.cleaned_data:
+            self.client.email = self.cleaned_data['email']
+            
         self.client.save()
         
         return self.client

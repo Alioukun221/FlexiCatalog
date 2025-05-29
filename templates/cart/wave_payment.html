@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paiement Wave{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/wave_payment.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="wave-payment-container">
+    <div class="payment-card">
+        <div class="payment-icon">
+            <i class="fas fa-mobile-alt"></i> <!-- Using a mobile icon as a placeholder -->
+        </div>
+        <h2>Paiement Sécurisé via Wave</h2>
+        <div class="payment-details">
+            <p>Veuillez suivre les instructions sur votre application Wave pour finaliser le paiement.</p>
+            <p>Le montant total de votre commande est : <strong class="text-primary">{{ total_price }} FCFA</strong></p>
+            <p>Après avoir initié le paiement sur votre téléphone, entrez le code de confirmation ici :</p>
+        </div>
+
+        <form method="post" action="{% url 'cart:process_wave_payment' %}" class="payment-form mt-4">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="confirmation_code">Code de Confirmation Wave</label>
+                <input type="text" id="confirmation_code" name="confirmation_code" required>
+            </div>
+            <button type="submit" class="btn-pay">Payer {{ total_price }} FCFA</button>
+        </form>
+
+        <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-secondary btn-back-to-cart">
+            <i class="fas fa-arrow-left"></i> Retour au panier
+        </a>
+    </div>
+</div>
+{% endblock %}

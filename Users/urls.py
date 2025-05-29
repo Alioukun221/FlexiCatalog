@@ -10,4 +10,5 @@ urlpatterns = [
    path('profil_user/',profile , name='profile_user'),
    path('produit/<str:produit_id>/', detail_produit, name='detail_produit'),
    path('produit/<str:produit_id>/commentaires/', tous_commentaires_produit, name='commentaires_produit'),
+   path('deconnexion/', logout, name='logout'),
 ]

@@ -1,16 +1,17 @@
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import (
     ReferenceField, EmbeddedDocumentField, IntField,
-    StringField, DateTimeField, EmbeddedDocumentListField, ListField,
+    StringField, DateTimeField, EmbeddedDocumentListField, ListField, DecimalField
 )
 from django.contrib.auth.models import User
-from produits.models import Produit  # Assurez-vous que ce modèle est aussi basé sur mongoengine
+from Users.models import Client
+from produits.models import Produit
 from datetime import datetime
 
 
 class Cart(Document):
-    user_id = StringField()
-    session_key = StringField(required=True)
+    user = ReferenceField(Client, required=False) 
+    session_key = StringField(required=False) 
     items = ListField(ReferenceField('CartItem'))
     
     @property
@@ -29,5 +30,21 @@ class CartItem(Document):
     @property
     def total_price(self):
         return self.product.prix * self.quantity
+
+
+class Order(Document):
+    user = ReferenceField(Client, required=True)
+    created_at = DateTimeField(default=datetime.utcnow)
+    total_price = DecimalField(required=True, precision=2)
+    # Add other relevant fields like payment status, shipping address, etc.
+
+class OrderItem(EmbeddedDocument):
+    product = ReferenceField(Produit, required=True)
+    quantity = IntField(required=True)
+    price = DecimalField(required=True, precision=2) # Price per unit at the time of order
+
+
+# Add items list to Order model
+Order.items = EmbeddedDocumentListField(OrderItem)
 
 

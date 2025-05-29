@@ -13,7 +13,10 @@ from mongoengine.queryset.visitor import Q
 
 
 def afficher_produits(request):
-    produits = Produit.objects.all()
+    produits_list = Produit.objects.all()
+    paginator = Paginator(produits_list, 12)  # 12 produits par page
+    page = request.GET.get('page')
+    produits = paginator.get_page(page)
     return render(request, 'produits/produits.html', {'produits': produits})
 
 
@@ -39,15 +42,30 @@ def afficher_produit_spécifique(request, slug):
 def search_products(request):
     query = request.GET.get('q', '').strip()
     if query:
-        produits = Produit.objects.filter(nom__icontains=query)[:5]
-        results = [{
-            'nom': produit.nom,
-            'slug': produit.slug,
-            'image_url': '/static/img/no_image.png'
-        } for produit in produits]
-    else:
-        results = []
-    return JsonResponse(results, safe=False)
+        # Use Q objects for OR queries across multiple fields
+        produits = Produit.objects.filter(
+            Q(nom__icontains=query) | Q(description__icontains=query)
+        )
+        
+        # Handle sorting
+        sort = request.GET.get('sort', 'relevance')
+        if sort == 'price_asc':
+            produits = produits.order_by('prix')
+        elif sort == 'price_desc':
+            produits = produits.order_by('-prix')
+        elif sort == 'name_asc':
+            produits = produits.order_by('nom')
+        elif sort == 'name_desc':
+            produits = produits.order_by('-nom')
+        
+        return render(request, 'produits/search_results.html', {
+            'produits': produits,
+            'query': query
+        })
+    return render(request, 'produits/search_results.html', {
+        'produits': [],
+        'query': ''
+    })
 
 
 # @csrf_exempt
@@ -81,7 +99,7 @@ def rechercher_produits_api(request):
             resultats.append({
                 'nom': produit.nom,
                 'slug': produit.slug,
-                'image_url': produit.image.url if produit.image else '',
+                'image_url': produit.image_url if produit.image_url else '',
                 'prix': float(produit.prix),
             })
         return JsonResponse(resultats, safe=False)

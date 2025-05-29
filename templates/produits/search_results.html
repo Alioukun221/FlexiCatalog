@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Résultats de recherche - {{ query }}{% endblock %}
+
+{% block content %}
+<div class="search-results-container">
+    <div class="search-header">
+        <h1>Résultats de recherche pour "{{ query }}"</h1>
+        <p class="search-count">{{ produits|length }} produit(s) trouvé(s)</p>
+    </div>
+
+    {% if produits %}
+
+    <div class="search-results-grid">
+        {% for produit in produits %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ produit.image_url|default:'/static/img/no_image.png' }}" alt="{{ produit.nom }}">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">{{ produit.nom }}</h3>
+                <p class="product-category">{{ produit.categorie }}</p>
+                <p class="product-price">{{ produit.prix }} FCFA</p>
+                <div class="product-actions">
+                    <a href="{% url 'products:produit_spécifique' produit.slug %}" class="btn btn-primary">Voir
+                        détails</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-results">
+        <i class="fas fa-search fa-3x"></i>
+        <h2>Aucun résultat trouvé</h2>
+        <p>Essayez avec d'autres termes de recherche ou parcourez nos catégories.</p>
+        <a href="{% url 'products:liste_categories' %}" class="btn btn-primary">Voir les catégories</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/search_results.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sortSelect = document.getElementById('sort');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function () {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('sort', this.value);
+                window.location.href = currentUrl.toString();
+            });
+        }
+
+        // Add to cart functionality
+        const addToCartButtons = document.querySelectorAll('.add-to-cart');
+        addToCartButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.dataset.productId;
+                fetch('/cart/add/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        quantity: 1
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update cart count in navbar
+                            const cartCount = document.querySelector('.cart-counter');
+                            if (cartCount) {
+                                cartCount.textContent = data.cart_total_items;
+                            }
+                            // Show success message
+                            alert('Produit ajouté au panier !');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+        // Function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

@@ -14,8 +14,13 @@ from .forms import (
     PasswordResetRequestForm, PasswordResetConfirmForm,
     ClientProfileUpdateForm, ChangePasswordForm
 )
+# Import cart models and helper function
+from cart.models import Cart, CartItem
+from cart.views import get_or_create_cart # Assuming this can be imported and used here
 
 import secrets
+# Import AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 
 
 
@@ -32,7 +37,8 @@ def register_view(request):
             client = form.save()
             request.session['client_id'] = str(client.id)
             messages.success(request, "Votre compte a été créé avec succès!")
-            return redirect('login')
+            # Redirect to a page after successful login, e.g., 'dashboard' or 'accueil'
+            return redirect('accueil') 
     else:
         form = ClientRegistrationForm()
     
@@ -45,14 +51,47 @@ def login_view(request):
         form = ClientLoginForm(request.POST)
         if form.is_valid():
             client = form.cleaned_data['client']
-            request.session['client_id'] = str(client.id)
-            #messages.success(request, f"Bienvenue, {client.username}!")
             
+            # --- Cart Migration Logic ---
+            # Get the anonymous cart using the session key *before* logging in the user
+            anonymous_cart = Cart.objects(session_key=request.session.session_key).first()
+            
+            # Log in the user by setting the session ID
+            request.session['client_id'] = str(client.id)
+
+            # Get or create the authenticated user's cart
+            # The get_or_create_cart function should now associate the cart with the logged-in user
+            # because request.user will be authenticated after setting client_id (via middleware)
+            user_cart = get_or_create_cart(request)
+
+            # Migrate items from the anonymous cart to the user's cart
+            if anonymous_cart:
+                anonymous_items = CartItem.objects(cart=anonymous_cart)
+                for anonymous_item in anonymous_items:
+                    # Check if the product is already in the user's cart
+                    user_cart_item = CartItem.objects(cart=user_cart, product=anonymous_item.product).first()
+                    
+                    if user_cart_item:
+                        # Product exists, update quantity
+                        user_cart_item.quantity += anonymous_item.quantity
+                        # Ensure quantity doesn't exceed stock (optional, depends on desired behavior)
+                        # if user_cart_item.quantity > user_cart_item.product.stock:
+                        #     user_cart_item.quantity = user_cart_item.product.stock
+                        user_cart_item.save()
+                    else:
+                        # Product does not exist, move the item to the user's cart
+                        anonymous_item.cart = user_cart
+                        anonymous_item.save()
+                
+                # Delete the anonymous cart after migration
+                anonymous_cart.delete()
+            # --- End Cart Migration Logic ---
+
+            messages.success(request, "Connexion réussie!")
             # Redirection selon le rôle
-            # comment enregistrer un user comme admin ?
             if client.role == 'admin':
                 return redirect('dashboard')
-            return redirect('dashboard')
+            return redirect('accueil')
     else:
         form = ClientLoginForm()
     
@@ -65,7 +104,7 @@ def logout(request):
         del request.session['client_id']
         messages.success(request, "Vous avez été déconnecté avec succès.")
     
-    return redirect('login')
+    return redirect('accueil')
 
 
 def password_reset_request(request):
@@ -201,7 +240,10 @@ def change_password(request):
 # Middleware pour vérifier l'authentification
 def auth_middleware(get_response):
     def middleware(request):
-        # Vérifier si l'utilisateur est connecté
+        # Initialize request.client and request.user
+        request.client = None
+        request.user = AnonymousUser() # Initialize request.user to AnonymousUser
+
         if 'client_id' in request.session:
             try:
                 client = Client.objects.get(id=request.session['client_id'])
@@ -210,17 +252,33 @@ def auth_middleware(get_response):
                 if not client.actif:
                     # Déconnecter l'utilisateur si son compte a été désactivé
                     del request.session['client_id']
+                    # Clear request.client and set request.user back to AnonymousUser
+                    request.client = None
+                    request.user = AnonymousUser()
                     messages.error(
                         request, 
                         "Votre compte a été désactivé. Veuillez contacter l'administrateur."
                     )
-                    return redirect('login')
-                
+                    # Do not redirect here, let the view/decorator handle it after middleware
+                    # return redirect('login') # Removed redirection from middleware
+
+                else:
+                     # Attacher le client à l'objet request
+                     request.client = client
+                     # Set request.user for compatibility with Django's auth system
+                     request.user = client # Assuming Client model has necessary properties
+
             except Client.DoesNotExist:
                 # Déconnecter si l'ID du client n'existe pas
                 del request.session['client_id']
-                return redirect('login')
+                # Clear request.client and set request.user back to AnonymousUser
+                request.client = None
+                request.user = AnonymousUser()
+                # Do not redirect here, let the view/decorator handle it after middleware
+                # return redirect('login') # Removed redirection from middleware
         
+        # If no client_id in session, request.client is None and request.user is already AnonymousUser
+
         response = get_response(request)
         return response
     

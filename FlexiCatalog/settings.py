@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'accueil',
     'cart',
     'admindashboard',
-    'Users'
+    'Users',
+    # Ajoutez ici d'autres applications si nécessaire
 ]
 
 MIDDLEWARE = [
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Users.views.auth_middleware',
 ]
 # c'est pour le hachage du mot de passe avant de le stocker dans la base de donnée
 PASSWORD_HASHERS = [
@@ -77,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart_context',
             ],
         },
     },
@@ -109,6 +112,9 @@ DATABASES = {
 # Session configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 172800  # 2 days in seconds
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Cache configuration
 CACHES = {
@@ -166,6 +172,9 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Specify the URL for the login page
+LOGIN_URL = '/connexion/'
 
 # Configuration du logging
 LOGGING = {

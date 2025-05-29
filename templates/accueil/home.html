@@ -3,41 +3,50 @@
 
 {% block title %}Flexible E-commerce{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
 {% block content %}
 <!-- Hero Banner -->
-<section class="hero-banner" style="background-color: white; color: #003366;">
+<section class="hero-banner-section position-relative overflow-hidden">
     <div class="container">
-        <div class="row align-items-center py-5">
-            <div class="col-md-6 text-start">
-                <h1 class="display-4 fw-bold hero-title">Beats by Dre</h1>
-                <h2 class="display-5 mb-3 hero-subtitle">Wireless</h2>
-                <h1 class="display-1 fw-bold text-uppercase hero-headline">HEADPHONE</h1>
-                <div class="mt-4">
-                    <a href="{% url 'products:detail_categorie' 'audio' %}" class="btn btn-primary px-4 py-2">Commander</a>
+        <div class="row align-items-center hero-row position-relative">
+            <div class="col-12 text-center">
+                <div class="hero-content animate__animated animate__fadeInLeft">
+                    <h1 class="hero-title text-primary mb-2">Beats by Dre</h1>
+                    <h2 class="hero-subtitle text-secondary mb-3">Wireless</h2>
+                    <h1 class="hero-headline text-dark mb-4 text-uppercase">HEADPHONE</h1>
+                    <div class="mt-4">
+                        <a href="{% url 'products:detail_categorie' 'audio-4cb0c2b4' %}"
+                            class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg hover-scale">Voir plus</a>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <img src="{% static 'img/products/blue_headphones.png' %}" alt="Beats by Dre" class="img-fluid">
+            <div class="col-12 d-flex justify-content-center animate__animated animate__fadeInRight hero-image-col">
+                <div class="hero-image-container position-absolute">
+                    <img src="{% static 'img/products/blue_headphones.png' %}" alt="Beats by Dre"
+                        class="img-fluid floating-animation">
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Section des catégories -->
-<section class="py-5" style="background-color: white; box-shadow: inset 0 6px 12px -6px rgba(0,0,0,0.1);">
-
+<section class="py-5 categories-section">
     <div class="container">
-        <div class="row">
+        <h2 class="section-title mb-5 text-center display-4 fw-bold">Nos Meilleures Catégories</h2>
+        <div class="row g-4">
             {% for categorie in categories|slice:":6" %}
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4">
                 <a href="{% url 'products:detail_categorie' categorie.slug %}" class="text-decoration-none">
-                    <div class="card category-card position-relative text-white shadow"
-                         style="background: linear-gradient(135deg, #1e90ff 0%, #0056b3 100%); border: none; border-radius: 12px;">
-                        <div class="card-body d-flex flex-column justify-content-end align-items-start">
-                            <h6 class="mb-2 text-start">Découvrez nos</h6>
-                            <h3 class="category-title mb-0 text-start">{{ categorie.nom|upper }}</h3>
-                            <div class="mt-3">
-                                <a href="{% url 'products:detail_categorie' categorie.slug %}" class="btn btn-light btn-sm">Voir plus</a>
+                    <div class="card category-card h-100 position-relative text-white shadow-lg hover-lift"
+                        style="background-image: url('{{ categorie.image_url }}');">
+                        <div class="card-body d-flex flex-column justify-content-end align-items-start p-4">
+                            <div class="mt-auto">
+                                <a href="{% url 'products:detail_categorie' categorie.slug %}"
+                                    class="btn btn-light btn-sm rounded-pill px-4">Voir plus    </a>
                             </div>
                         </div>
                     </div>
@@ -49,66 +58,64 @@
 </section>
 
 <!-- Features -->
-<!-- Features -->
-<section class="py-4 features-section" style="background-color: white;">
+<section class="py-5 features-section">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <div class="feature-item p-3" style="background-color: white !important;">
-                    <div class="feature-icon mb-3 d-flex justify-content-center">
-                        <img src="{% static 'img/products/truc.png' %}" alt="Livraison" width="70" height="80">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="feature-item p-4 rounded-4 shadow-sm hover-lift">
+                    <div class="feature-icon mb-4 d-flex justify-content-center">
+                        <img src="{% static 'img/products/truc.png' %}" alt="Livraison" width="80" height="90"
+                            class="hover-scale">
                     </div>
-                    <p class="fw-bold text-dark mb-0">Livraison partout dans le pays</p>
+                    <p class="fw-bold text-dark mb-0 fs-5">Livraison partout dans le pays</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-item p-3" style="background-color: white !important;">
-                    <div class="feature-icon mb-3 d-flex justify-content-center">
-                        <img src="{% static 'img/products/certified.png' %}" alt="Garantie" width="80" height="78">
+            <div class="col-md-4">
+                <div class="feature-item p-4 rounded-4 shadow-sm hover-lift">
+                    <div class="feature-icon mb-4 d-flex justify-content-center">
+                        <img src="{% static 'img/products/certified.png' %}" alt="Garantie" width="90" height="88"
+                            class="hover-scale">
                     </div>
-                    <p class="fw-bold text-dark mb-0">Garantie de 30 jours</p>
+                    <p class="fw-bold text-dark mb-0 fs-5">Garantie de 30 jours</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-item p-3" style="background-color: white !important;">
-                    <div class="feature-icon mb-3 d-flex justify-content-center">
-                        <img src="{% static 'img/products/assistance.png' %}" alt="Support" width="60" height="60">
+            <div class="col-md-4">
+                <div class="feature-item p-4 rounded-4 shadow-sm hover-lift">
+                    <div class="feature-icon mb-4 d-flex justify-content-center">
+                        <img src="{% static 'img/products/assistance.png' %}" alt="Support" width="70" height="70"
+                            class="hover-scale">
                     </div>
-                    <p class="fw-bold text-dark mb-0">Support technique disponible 24/7</p>
+                    <p class="fw-bold text-dark mb-0 fs-5">Support technique disponible 24/7</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-
-
-
-
-
-
 <!-- Best Sellers Section -->
-<section class="py-5" style="background-color: white;">
+<section class="py-5 best-sellers-section">
     <div class="container">
-        <h2 class="section-title mb-4 text-dark">Nos Meilleurs Produits</h2>
-        
-        <div class="row">
+        <h2 class="section-title mb-5 text-center display-4 fw-bold">Nos Meilleurs Produits</h2>
+
+        <div class="row g-4">
             {% for product in produits_phares %}
-            <div class="col-6 col-md-3 mb-4">
-                <div class="card product-card h-100 shadow-sm">
-                    <a href="{% url 'products:produit_spécifique' product.slug %}">
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.nom }}" class="card-img-top">
-                        {% else %}
-                            <img src="{% static 'img/no_image.png' %}" alt="No image" class="card-img-top">
-                        {% endif %}
+            <div class="col-6 col-md-3">
+                <div class="card product-card h-100 shadow-sm hover-lift rounded-4 overflow-hidden">
+                    <a href="{% url 'products:produit_spécifique' product.slug %}" class="text-decoration-none">
+                        <div class="position-relative overflow-hidden">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.nom }}"
+                                class="card-img-top product-image">
+                            {% else %}
+                            <img src="{% static 'img/no_image.png' %}" alt="No image"
+                                class="card-img-top product-image">
+                            {% endif %}
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="card-title text-dark mb-2">{{ product.nom }}</h5>
+                            <p class="price mb-0 text-primary fw-bold fs-5">{{ product.prix }} FCFA</p>
+                        </div>
                     </a>
-                    <div class="card-body">
-                        <a href="{% url 'products:produit_spécifique' product.slug %}" class="text-decoration-none text-dark">
-                            <h5 class="card-title">{{ product.nom }}</h5>
-                        </a>
-                        <p class="price mb-0 text-primary fw-bold">{{ product.prix }} FCFA</p>
-                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -116,98 +123,99 @@
     </div>
 </section>
 
-
-
 <!-- Newsletter Section -->
-<section class="newsletter-section py-5 bg-light-gray">
+<section class="newsletter-section py-5">
     <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-8 text-center newsletter-container">
-          <h3>Restez à jour concernant nos offres</h3>
-          <div class="input-group mt-4 shadow-lg rounded-pill overflow-hidden">
-            <input type="email" id="emailInput" class="form-control" placeholder="Votre adresse e-mail" aria-label="Adresse e-mail">
-            <button class="btn btn-primary btn-lg" id="subscribeBtn" type="button">S'abonner</button>
-          </div>
-          <small id="msg" class="form-text mt-2 text-success" style="display:none;">Merci pour votre inscription !</small>
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center newsletter-container">
+                <h3 class="display-5 fw-bold mb-4">Restez à jour concernant nos offres</h3>
+                <div class="input-group mt-4 shadow-lg rounded-pill overflow-hidden">
+                    <input type="email" id="emailInput" class="form-control form-control-lg"
+                        placeholder="Votre adresse e-mail" aria-label="Adresse e-mail">
+                    <button class="btn btn-primary btn-lg px-5" id="subscribeBtn" type="button">S'abonner</button>
+                </div>
+                <small id="msg" class="form-text mt-3 text-success fw-bold" style="display:none;">Merci pour votre
+                    inscription !</small>
+            </div>
         </div>
-      </div>
     </div>
-  </section>
-  
+</section>
 
+<!-- Testimonials -->
+<section class="py-5 testimonials-section">
+    <div class="container">
+        <h2 class="section-title mb-5 text-center display-4 fw-bold">Retour de nos clients</h2>
 
-    <!-- Testimonials -->
-    <section class="py-5">
-        <div class="container">
-            <h2 class="section-title mb-4">Retour de nos clients</h2>
-            
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"Excellent service et produits de qualité. Je recommande vivement!"</p>
-                            <p class="fw-bold mb-0">Xavier Sene</p>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm hover-lift rounded-4">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
                         </div>
+                        <p class="card-text fs-5 mb-3">"Excellent service et produits de qualité. Je recommande
+                            vivement!"</p>
+                        <p class="fw-bold mb-0 text-primary">Xavier Sene</p>
                     </div>
                 </div>
-                
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"Livraison rapide et emballage soigné. Les produits sont conformes à la description."</p>
-                            <p class="fw-bold mb-0">Oumar Sané</p>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm hover-lift rounded-4">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
                         </div>
+                        <p class="card-text fs-5 mb-3">"Livraison rapide et emballage soigné. Les produits sont
+                            conformes à la description."</p>
+                        <p class="fw-bold mb-0 text-primary">Oumar Sané</p>
                     </div>
                 </div>
-                
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                            </div>
-                            <p class="card-text">"J'ai acheté plusieurs produits et je suis très satisfait. Le service client est réactif."</p>
-                            <p class="fw-bold mb-0">Fatou Diop</p>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm hover-lift rounded-4">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
                         </div>
+                        <p class="card-text fs-5 mb-3">"J'ai acheté plusieurs produits et je suis très satisfait. Le
+                            service client est réactif."</p>
+                        <p class="fw-bold mb-0 text-primary">Fatou Diop</p>
                     </div>
                 </div>
-                
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="mb-2">
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star text-warning"></i>
-                                <i class="fas fa-star-half-alt text-warning"></i>
-                            </div>
-                            <p class="card-text">"Prix compétitifs et large choix de produits. Je reviendrai pour de futurs achats."</p>
-                            <p class="fw-bold mb-0">Amadou Sow</p>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card h-100 shadow-sm hover-lift rounded-4">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
                         </div>
+                        <p class="card-text fs-5 mb-3">"Prix compétitifs et large choix de produits. Je reviendrai pour
+                            de futurs achats."</p>
+                        <p class="fw-bold mb-0 text-primary">Amadou Sow</p>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
+    </div>
+</section>
 
 {% endblock %}

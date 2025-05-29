@@ -1,0 +1,183 @@
+{% load static %}
+
+{% if request.client and request.client.role == 'admin' %}
+<!-- Admin Navbar -->
+<nav class="admin-navbar">
+    <div class="admin-navbar-container">
+        <div class="admin-navbar-brand">
+            <span class="admin-dashboard-title">Dashboard Administrateur</span>
+        </div>
+        <div class="admin-navbar-right">
+            <div class="admin-search-box">
+                <input type="text" placeholder="Recherche...">
+            </div>
+            <span class="admin-username">{{ request.client.username }}</span>
+            <span class="admin-role-badge">Admin</span>
+            <a href="{% url 'logout' %}" class="admin-logout-link">Déconnexion</a>
+        </div>
+    </div>
+</nav>
+{% else %}
+<!-- User Navbar -->
+<nav class="navbar">
+    <div class="navbar-container">
+
+        <div class="navbar-brand">
+            <a href="{% url 'accueil' %}" class="brand-link">
+                <img src="{% static 'img/products/shop_logo.png' %}" alt="FlexiCatalog Logo" class="logo">
+                <span class="brand-name">FlexiCatalog</span>
+            </a>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="navbar-main">
+            <!-- Navigation Links -->
+            <div class="navbar-nav">
+                <a href="{% url 'products:liste_produits' %}" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    <span>Produits</span>
+                </a>
+                <div class="nav-item dropdown">
+                    <a href="{% url 'products:liste_categories' %}" class="nav-link dropdown-toggle"
+                        data-bs-toggle="dropdown">
+                        <i class="fas fa-th-large"></i>
+                        <span>Catégories</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <div class="dropdown-menu categories-menu">
+                        <div class="categories-grid">
+                            {% for categorie in categories %}
+                            <a href="{% url 'products:detail_categorie' categorie.slug %}" class="category-item">
+                                <i class="fas fa-tag"></i>
+                                <span>{{ categorie.nom }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        <div class="dropdown-footer">
+                            <a href="{% url 'products:liste_categories' %}" class="view-all">
+                                <i class="fas fa-list"></i>
+                                Voir toutes les catégories
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="navbar-search">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input id="searchInput" type="text" placeholder="Rechercher un produit..." autocomplete="off" />
+                    <button id="searchButton" class="btn btn-outline-secondary btn-sm" style="border: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="#367ee6" d="M16 11a5 5 0 1 1-10 0a5 5 0 0 1 10 0" />
+                            <path fill="#367ee6" fill-rule="evenodd"
+                                d="M2 11a9 9 0 1 1 16.032 5.618l3.675 3.675a1 1 0 0 1-1.414 1.414l-3.675-3.675A9 9 0 0 1 2 11m9-7a7 7 0 1 0 0 14a7 7 0 0 0 0-14"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <ul id="searchResults" class="search-results"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Actions -->
+        <div class="navbar-actions">
+            <div class="dropdown user-dropdown">
+                <a href="#" class="action-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle"></i>
+                    {% if request.client %}
+                    <span class="user-name">{{ request.client.username }}</span>
+                    {% else %}
+                    <span class="user-name">Compte</span>
+                    {% endif %}
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="dropdown-menu user-menu">
+                    {% if request.client %}
+                    <div class="user-header">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">{{ request.client.username }}</span>
+                            <span class="user-email">{{ request.client.email }}</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'profile_user' %}" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mon profil</span>
+                    </a>
+
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'logout' %}" class="dropdown-item text-danger">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="dropdown-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Connexion</span>
+                    </a>
+                    <a href="{% url 'register' %}" class="dropdown-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Inscription</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <a href="{% url 'cart:cart_detail' %}" class="action-link cart-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#367ee6"
+                        d="M17 18a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2c0-1.11.89-2 2-2M1 2h3.27l.94 2H20a1 1 0 0 1 1 1c0 .17-.05.34-.12.5l-3.58 6.47c-.34.61-1 1.03-1.75 1.03H8.1l-.9 1.63l-.03.12a.25.25 0 0 0 .25.25H19v2H7a2 2 0 0 1-2-2c0-.35.09-.68.24-.96l1.36-2.45L3 4H1zm6 16a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2c0-1.11.89-2 2-2m9-7l2.78-5H6.14l2.36 5z" />
+                </svg>
+                <span class="cart-counter">{{ cart_total_items|default:0 }}</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const searchButton = document.getElementById('searchButton');
+
+        // Hide results when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.search-box')) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Show results when clicking on the input
+        searchInput.addEventListener('click', () => {
+            if (searchResults.innerHTML.trim() !== '') {
+                searchResults.style.display = 'block';
+            }
+        });
+
+        // Function to perform search
+        const performSearch = () => {
+            const query = searchInput.value.trim();
+            if (query.length > 2) { // Perform search only if query has at least 3 characters
+                window.location.href = `{% url 'products:search_products' %}?q=${encodeURIComponent(query)}`;
+            }
+        };
+
+        // Trigger search on button click
+        searchButton.addEventListener('click', performSearch);
+
+        // Optional: Trigger search on Enter key press in the input field
+        searchInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission if inside a form
+                performSearch();
+            }
+        });
+
+    });
+</script>
+{% endif %}
