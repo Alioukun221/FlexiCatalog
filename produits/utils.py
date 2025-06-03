@@ -1,4 +1,5 @@
 from mongoengine.queryset.visitor import Q
+from .models import Produit
 
 def construire_filtre_recherche_v2(data):
     filtre = {}
@@ -39,7 +40,7 @@ def recherche_filtrée(params):
     Retourne une QuerySet MongoEngine filtrée selon les critères.
     """
 
-    filtre = Q(is_active=True)  # Toujours filtrer les produits actifs
+    filtre = Q(is_active=True)  
 
     # Filtrage classique
     if 'categorie' in params and params['categorie']:
@@ -58,18 +59,15 @@ def recherche_filtrée(params):
     if 'q' in params and params['q']:
         filtre &= (Q(nom__icontains=params['q']) | Q(description__icontains=params['q']))
 
-    # Filtrage dynamique selon caractéristiques
-    # Parcours des autres paramètres pour chercher dans caracteristiques
+
     for key, value in params.items():
         if key in ['categorie', 'marque', 'prix_min', 'prix_max', 'q']:
-            continue  # Déjà traité
+            continue  
 
         if value:
-            # Filtrer dans caracteristiques.key avec insensible à la casse et contenance
             filtre &= Q(**{f"caracteristiques.{key}__icontains": value})
 
-    # Exécuter la requête
-    from .models import Produit
+
     resultats = Produit.objects(filtre)
 
     return resultats

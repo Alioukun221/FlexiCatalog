@@ -1,20 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.views.decorators.http import require_GET
 from .models import Produit, Categorie, CATEGORIES
 from datetime import datetime
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from .utils import construire_filtre_recherche_v2
-from django.views.decorators.csrf import csrf_exempt
 import json
-from .utils import recherche_filtrée
 from django.core.paginator import Paginator
 from mongoengine.queryset.visitor import Q
+import logging
 
+logger = logging.getLogger('admindashboard')
 
 def afficher_produits(request):
     produits_list = Produit.objects.all()
-    paginator = Paginator(produits_list, 12)  # 12 produits par page
+    paginator = Paginator(produits_list, 12)  
     page = request.GET.get('page')
     produits = paginator.get_page(page)
     return render(request, 'produits/produits.html', {'produits': produits})
@@ -42,7 +41,7 @@ def afficher_produit_spécifique(request, slug):
 def search_products(request):
     query = request.GET.get('q', '').strip()
     if query:
-        # Use Q objects for OR queries across multiple fields
+
         produits = Produit.objects.filter(
             Q(nom__icontains=query) | Q(description__icontains=query)
         )
@@ -110,7 +109,7 @@ def liste_produits(request):
     if prix_max:
         produits = produits.filter(prix__lte=prix_max)
     
-    # Filtre dynamique selon catégorie (exemple RAM pour Smartphones)
+    # Filtre dynamique selon catégorie
     if categorie == 'Smartphones':
         ram = params.get('ram')
         if ram:
@@ -152,7 +151,7 @@ def search(request):
     # Filtres avancés
     if category:
         try:
-            # Pour MongoDB, on utilise directement l'ID de la catégorie
+            
             produits = produits.filter(categorie__id=category)
         except:
             pass
@@ -197,7 +196,7 @@ def search(request):
             produits = produits.order_by('-nom')
     
     # Pagination
-    paginator = Paginator(produits, 12)  # 12 produits par page
+    paginator = Paginator(produits, 12)  
     page = request.GET.get('page', 1)
     try:
         produits = paginator.get_page(page)

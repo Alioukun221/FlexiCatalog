@@ -41,7 +41,7 @@ class Order(Document):
 class OrderItem(EmbeddedDocument):
     product = ReferenceField(Produit, required=True)
     quantity = IntField(required=True)
-    price = DecimalField(required=True, precision=2) # Price per unit at the time of order
+    price = DecimalField(required=True, precision=2)
 
 
 # Add items list to Order model

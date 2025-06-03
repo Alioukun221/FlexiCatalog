@@ -24,10 +24,10 @@ class Client(Document):
     date_inscription = DateTimeField()
     actif = BooleanField(default=True)
 
-    # Required for Django authentication compatibility
+
     @property
     def is_authenticated(self):
-        return True # Or add logic to check if the user is genuinely authenticated
+        return True 
 
     @property
     def is_anonymous(self):
@@ -35,10 +35,10 @@ class Client(Document):
 
     @property
     def is_active(self):
-        return self.actif # Use the 'actif' field to determine if the user is active
+        return self.actif 
 
     def get_id(self):
-        return str(self.id) # Return the MongoDB ObjectId as a string
+        return str(self.id) 
     
     def set_password(self, raw_password):
         self.password = make_password(raw_password)

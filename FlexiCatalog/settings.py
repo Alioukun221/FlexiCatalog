@@ -112,7 +112,7 @@ DATABASES = {
 # Session configuration
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_AGE = 172800  # 2 days in seconds
+SESSION_COOKIE_AGE = 172800  # 2 days
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
@@ -164,9 +164,7 @@ STATICFILES_DIRS = [BASE_DIR /"static"]
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

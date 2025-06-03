@@ -174,7 +174,6 @@ class Categorie(Document):
     
 # Modèle Produit avec champs dynamiques
 class Produit(Document):
-    # Champs communs à tous les produits
     nom = StringField(required=True, max_length=200)
     description = StringField(required=True)
     slug = StringField(unique=True)
@@ -183,16 +182,11 @@ class Produit(Document):
     image_url = StringField() 
     categorie = StringField(required=True, choices=list(CATEGORIES.keys()))
     marque = StringField(required=True, max_length=100)
-    # note = IntField(required= False, default=0)
-    # commentaires = ListField(EmbeddedDocumentField('Commentaire'))
     date_creation = DateTimeField(default=datetime.utcnow)
     date_modification = DateTimeField(default=datetime.utcnow)
     is_active = BooleanField(default=True)
-
-    # Champs dynamiques selon la catégorie
     caracteristiques = DictField()
     image = models.ImageField(upload_to='produits_images/', blank=True, null=True)
-
 
     meta = {
         'collection': 'produits',
@@ -209,21 +203,18 @@ class Produit(Document):
         return None
 
     def get_champs_requis(self):
-        """Retourne les champs requis pour la catégorie du produit"""
         return CATEGORIES.get(self.categorie, {})
 
     def get_champs_disponibles(self):
-        """Retourne tous les champs disponibles pour la catégorie du produit"""
         return CATEGORIES.get(self.categorie, {})
 
     def clean(self):
-        """Validation des champs selon la catégorie"""
         super().clean()
         champs_requis = self.get_champs_requis()
         for champ, field in champs_requis.items():
             if field.required and champ not in self.caracteristiques:
                 raise ValidationError(f"Le champ {champ} est requis pour la catégorie {self.categorie}")
-    
+
     def save(self, *args, **kwargs):
         # Génération automatique du slug si non défini
         if not self.slug:
@@ -254,7 +245,6 @@ class Order(Document):
     
     def save(self, *args, **kwargs):
         if not self.numero_commande:
-            # Générer un numéro de commande unique
             date_str = datetime.utcnow().strftime('%Y%m%d')
             random_str = str(uuid.uuid4())[:8]
             self.numero_commande = f"CMD-{date_str}-{random_str}"
