@@ -68,27 +68,7 @@ def search_products(request):
     })
 
 
-# @csrf_exempt
-# def rechercher_produits_api(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
 
-#         filtre = construire_filtre_recherche_v2(data)
-#         produits = Produit.objects(__raw__=filtre, is_active=True)
-
-#         resultats = []
-#         for p in produits:
-#             resultats.append({
-#                 'nom': p.nom,
-#                 'categorie': p.categorie,
-#                 'prix': p.prix,
-#                 'marque': p.marque,
-#                 'caracteristiques': p.caracteristiques,
-#             })
-
-#         return JsonResponse({'produits': resultats})
-#     else:
-#         return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
 
 def rechercher_produits_api(request):
     query = request.GET.get('q', '')
@@ -145,6 +125,104 @@ def liste_produits(request):
         'categories': categories,
     }
     return render(request, 'produits/liste.html', context)
+
+def search(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+    marque = request.GET.get('marque', '')
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    ram = request.GET.get('ram', '')
+    storage = request.GET.get('storage', '')
+    camera = request.GET.get('camera', '')
+    battery = request.GET.get('battery', '')
+    sort_by = request.GET.get('sort_by', '')
+    
+    # Initialiser la requête de base
+    produits = Produit.objects.all()
+    
+    # Recherche simple
+    if query:
+        produits = produits.filter(
+            Q(nom__icontains=query) |
+            Q(description__icontains=query) |
+            Q(marque__icontains=query)
+        )
+    
+    # Filtres avancés
+    if category:
+        try:
+            # Pour MongoDB, on utilise directement l'ID de la catégorie
+            produits = produits.filter(categorie__id=category)
+        except:
+            pass
+    
+    if marque:
+        produits = produits.filter(marque__icontains=marque)
+    
+    if min_price:
+        try:
+            produits = produits.filter(prix__gte=float(min_price))
+        except:
+            pass
+    
+    if max_price:
+        try:
+            produits = produits.filter(prix__lte=float(max_price))
+        except:
+            pass
+    
+    # Filtres sur les caractéristiques
+    if ram:
+        produits = produits.filter(caracteristiques__ram=ram)
+    
+    if storage:
+        produits = produits.filter(caracteristiques__stockage=storage)
+    
+    if camera:
+        produits = produits.filter(caracteristiques__camera=camera)
+    
+    if battery:
+        produits = produits.filter(caracteristiques__batterie=battery)
+    
+    # Tri
+    if sort_by:
+        if sort_by == 'price_asc':
+            produits = produits.order_by('prix')
+        elif sort_by == 'price_desc':
+            produits = produits.order_by('-prix')
+        elif sort_by == 'name_asc':
+            produits = produits.order_by('nom')
+        elif sort_by == 'name_desc':
+            produits = produits.order_by('-nom')
+    
+    # Pagination
+    paginator = Paginator(produits, 12)  # 12 produits par page
+    page = request.GET.get('page', 1)
+    try:
+        produits = paginator.get_page(page)
+    except:
+        produits = paginator.get_page(1)
+    
+    # Récupérer toutes les catégories pour le filtre
+    categories = Categorie.objects.all()
+    
+    context = {
+        'produits': produits,
+        'categories': categories,
+        'query': query,
+        'selected_category': category,
+        'marque': marque,
+        'min_price': min_price,
+        'max_price': max_price,
+        'ram': ram,
+        'storage': storage,
+        'camera': camera,
+        'battery': battery,
+        'sort_by': sort_by,
+    }
+    
+    return render(request, 'produits/search.html', context)
 
 
 

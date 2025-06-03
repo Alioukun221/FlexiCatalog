@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Recherche de produits{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <!-- Barre de recherche simple -->
+    <div class="simple-search">
+        <form method="GET" action="{% url 'products:search' %}" class="search-form">
+            <div class="search-input-group">
+                <input type="text" name="q" value="{{ query }}" placeholder="Rechercher un produit..."
+                    class="search-input">
+                <button type="submit" class="search-button">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="search-layout">
+        <!-- Filtres avancés -->
+        <div class="filters-sidebar">
+            <h3 class="filters-title">Filtres avancés</h3>
+            <form method="GET" action="{% url 'products:search' %}" class="filters-form">
+                <input type="hidden" name="q" value="{{ query }}">
+
+                <!-- Catégorie -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Catégorie</h4>
+                    <select name="category" id="category" class="filter-select">
+                        <option value="">Toutes les catégories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cat.nom }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Marque -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Marque</h4>
+                    <select name="marque" id="marque" class="filter-select">
+                        <option value="">Toutes les marques</option>
+                        <option value="Samsung" {% if marque == 'Samsung' %}selected{% endif %}>Samsung</option>
+                        <option value="Apple" {% if marque == 'Apple' %}selected{% endif %}>Apple</option>
+                        <option value="Xiaomi" {% if marque == 'Xiaomi' %}selected{% endif %}>Xiaomi</option>
+                        <option value="Huawei" {% if marque == 'Huawei' %}selected{% endif %}>Huawei</option>
+                        <option value="Oppo" {% if marque == 'Oppo' %}selected{% endif %}>Oppo</option>
+                    </select>
+                </div>
+
+                <!-- Prix -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Prix</h4>
+                    <div class="price-range">
+                        <input type="number" name="min_price" id="min_price" value="{{ min_price }}"
+                            class="filter-input" placeholder="Min">
+                        <span class="price-separator">-</span>
+                        <input type="number" name="max_price" id="max_price" value="{{ max_price }}"
+                            class="filter-input" placeholder="Max">
+                    </div>
+                </div>
+
+                <!-- Caractéristiques -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Caractéristiques</h4>
+
+                    <div class="filter-group">
+                        <label for="ram">RAM</label>
+                        <select name="ram" id="ram" class="filter-select">
+                            <option value="">Toutes les capacités</option>
+                            <option value="2" {% if ram == '2' %}selected{% endif %}>2 GB</option>
+                            <option value="4" {% if ram == '4' %}selected{% endif %}>4 GB</option>
+                            <option value="6" {% if ram == '6' %}selected{% endif %}>6 GB</option>
+                            <option value="8" {% if ram == '8' %}selected{% endif %}>8 GB</option>
+                            <option value="12" {% if ram == '12' %}selected{% endif %}>12 GB</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="storage">Stockage</label>
+                        <select name="storage" id="storage" class="filter-select">
+                            <option value="">Toutes les capacités</option>
+                            <option value="32" {% if storage == '32' %}selected{% endif %}>32 GB</option>
+                            <option value="64" {% if storage == '64' %}selected{% endif %}>64 GB</option>
+                            <option value="128" {% if storage == '128' %}selected{% endif %}>128 GB</option>
+                            <option value="256" {% if storage == '256' %}selected{% endif %}>256 GB</option>
+                            <option value="512" {% if storage == '512' %}selected{% endif %}>512 GB</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="camera">Appareil photo</label>
+                        <select name="camera" id="camera" class="filter-select">
+                            <option value="">Toutes les options</option>
+                            <option value="12" {% if camera == '12' %}selected{% endif %}>12 MP</option>
+                            <option value="48" {% if camera == '48' %}selected{% endif %}>48 MP</option>
+                            <option value="64" {% if camera == '64' %}selected{% endif %}>64 MP</option>
+                            <option value="108" {% if camera == '108' %}selected{% endif %}>108 MP</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="battery">Batterie</label>
+                        <select name="battery" id="battery" class="filter-select">
+                            <option value="">Toutes les capacités</option>
+                            <option value="3000" {% if battery == '3000' %}selected{% endif %}>3000 mAh</option>
+                            <option value="4000" {% if battery == '4000' %}selected{% endif %}>4000 mAh</option>
+                            <option value="5000" {% if battery == '5000' %}selected{% endif %}>5000 mAh</option>
+                            <option value="6000" {% if battery == '6000' %}selected{% endif %}>6000 mAh</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tri -->
+                <div class="filter-section">
+                    <h4 class="filter-section-title">Trier par</h4>
+                    <select name="sort_by" id="sort_by" class="filter-select">
+                        <option value="">Pertinence</option>
+                        <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Prix croissant</option>
+                        <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Prix décroissant</option>
+                        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Nom A-Z</option>
+                        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Nom Z-A</option>
+                    </select>
+                </div>
+
+                <div class="filters-actions">
+                    <button type="submit" class="btn btn-primary">Appliquer les filtres</button>
+                    <a href="{% url 'products:search' %}" class="btn btn-secondary">Réinitialiser</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Résultats -->
+        <div class="search-results">
+            <h2 class="results-title">
+                {% if query %}
+                Résultats pour "{{ query }}"
+                {% else %}
+                Tous les produits
+                {% endif %}
+                <span class="results-count">({{ produits.paginator.count }} produits)</span>
+            </h2>
+
+            {% if produits %}
+            <div class="products-grid">
+                {% for produit in produits %}
+                <div class="product-card">
+                    {% if produit.image_url %}
+                    <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="product-image">
+                    {% endif %}
+                    <div class="product-info">
+                        <h3 class="product-name">{{ produit.nom }}</h3>
+                        <p class="product-price">{{ produit.prix }} FCFA</p>
+                        <p class="product-category">{{ produit.categorie.nom }}</p>
+                        <a href="{% url 'products:produit_spécifique' produit.slug %}" class="btn btn-primary">Voir détails</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if produits.paginator.num_pages > 1 %}
+            <div class="pagination">
+                {% if produits.has_previous %}
+                <a href="?page={{ produits.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}"
+                    class="page-link">&laquo; Précédent</a>
+                {% endif %}
+
+                {% for num in produits.paginator.page_range %}
+                {% if produits.number == num %}
+                <span class="page-link active">{{ num }}</span>
+                {% else %}
+                <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}"
+                    class="page-link">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+
+                {% if produits.has_next %}
+                <a href="?page={{ produits.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}"
+                    class="page-link">Suivant &raquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="no-results">
+                <p>Aucun produit ne correspond à votre recherche.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .search-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .search-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    /* Barre de recherche simple */
+    .simple-search {
+        margin-bottom: 2rem;
+    }
+
+    .search-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-input-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .search-button {
+        padding: 0.75rem 1.5rem;
+        background: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .search-button:hover {
+        background: #3182ce;
+    }
+
+    .search-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    /* Filtres sidebar */
+    .filters-sidebar {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        position: sticky;
+        top: 2rem;
+        height: fit-content;
+    }
+
+    .filters-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .filter-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-section-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #4a5568;
+        margin-bottom: 0.75rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1rem;
+    }
+
+    .filter-group label {
+        display: block;
+        font-size: 0.875rem;
+        color: #4a5568;
+        margin-bottom: 0.25rem;
+    }
+
+    .filter-select,
+    .filter-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        background-color: white;
+    }
+
+    .filter-select:focus,
+    .filter-input:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .price-range {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .price-separator {
+        color: #718096;
+    }
+
+    .filters-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        text-align: center;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #4299e1;
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: #3182ce;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+
+    /* Résultats */
+    .results-title {
+        font-size: 1.5rem;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+    }
+
+    .results-count {
+        font-size: 1rem;
+        color: #718096;
+        font-weight: normal;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 1rem;
+    }
+
+    .product-name {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #4299e1;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-category {
+        font-size: 0.875rem;
+        color: #718096;
+        margin-bottom: 1rem;
+    }
+
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .page-link {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        color: #4a5568;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .page-link:hover {
+        background: #f7fafc;
+    }
+
+    .page-link.active {
+        background: #4299e1;
+        color: white;
+        border-color: #4299e1;
+    }
+
+    /* Message aucun résultat */
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        color: #718096;
+    }
+
+    @media (max-width: 1024px) {
+        .search-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .filters-sidebar {
+            position: static;
+            margin-bottom: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .filters-actions {
+            flex-direction: column;
+        }
+
+        .filters-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

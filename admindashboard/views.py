@@ -6,14 +6,45 @@ import os
 import uuid
 import logging
 from django.utils.text import slugify
+from django.db.models import Sum, Count
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
 # Create your views here.
 
 def dashboard(request):
+    # Récupérer toutes les catégories
     categories = Categorie.objects.all()
-    return render(request, 'admindashboard/dashboard.html', {'categories': categories})
+    
+    # Calculer les statistiques
+    total_products = Produit.objects.count()
+    total_categories = Categorie.objects.count()
+    
+    # Calculer le total des ventes (à adapter selon votre modèle de commandes)
+    total_sales = 0  # À remplacer par le calcul réel des ventes
+    
+    # Calculer le nombre total de commandes (à adapter selon votre modèle de commandes)
+    total_orders = 0  # À remplacer par le calcul réel des commandes
+    
+    # Préparer les données pour les graphiques
+    # Données des ventes mensuelles (à adapter selon votre modèle de commandes)
+    monthly_sales = [0] * 12  # À remplacer par les vraies données
+    
+    # Données des produits les plus vendus (à adapter selon votre modèle de commandes)
+    top_products = []  # À remplacer par les vraies données
+    
+    context = {
+        'categories': categories,
+        'total_products': total_products,
+        'total_categories': total_categories,
+        'total_sales': total_sales,
+        'total_orders': total_orders,
+        'monthly_sales': monthly_sales,
+        'top_products': top_products,
+    }
+    
+    return render(request, 'admindashboard/dashboard.html', context)
 
 
 

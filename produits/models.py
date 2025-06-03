@@ -232,3 +232,32 @@ class Produit(Document):
         super().save(*args, **kwargs)
 
 
+class Order(Document):
+    numero_commande = StringField(required=True, unique=True)
+    date_commande = DateTimeField(default=datetime.utcnow)
+    client = StringField(required=True)
+    email = StringField(required=True)
+    telephone = StringField(required=True)
+    adresse = StringField(required=True)
+    produits = ListField(DictField())
+    total = FloatField(required=True)
+    statut = StringField(required=True, choices=['en_attente', 'confirmee', 'expediee', 'livree', 'annulee'])
+    
+    meta = {
+        'collection': 'commandes',
+        'indexes': ['numero_commande', 'date_commande', 'client'],
+        'ordering': ['-date_commande']
+    }
+    
+    def __str__(self):
+        return f"Commande {self.numero_commande} - {self.client}"
+    
+    def save(self, *args, **kwargs):
+        if not self.numero_commande:
+            # Générer un numéro de commande unique
+            date_str = datetime.utcnow().strftime('%Y%m%d')
+            random_str = str(uuid.uuid4())[:8]
+            self.numero_commande = f"CMD-{date_str}-{random_str}"
+        super().save(*args, **kwargs)
+
+
